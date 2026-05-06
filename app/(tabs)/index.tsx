@@ -89,6 +89,14 @@ export default function HomeScreen() {
         </View>
         <Text style={styles.arrow}>›</Text>
       </TouchableOpacity>
+      <TouchableOpacity style={[styles.stageCard, { borderLeftColor: '#e53935' }]} onPress={() => router.push('/disease')}>
+        <Text style={styles.stageEmoji}>🔍</Text>
+        <View style={styles.stageText}>
+          <Text style={styles.stageTitleText}>Disease Detector</Text>
+          <Text style={styles.stageDesc}>Take a photo → AI diagnoses your plant</Text>
+        </View>
+        <Text style={styles.arrow}>›</Text>
+      </TouchableOpacity>
 
       <View style={{ height: 40 }} />
     </ScrollView>
