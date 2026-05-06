@@ -1,8 +1,10 @@
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import {
-    ActivityIndicator, Alert,
+    ActivityIndicator,
+    Alert,
     SafeAreaView,
+    ScrollView,
     StyleSheet,
     Text, TextInput, TouchableOpacity,
     View
@@ -13,6 +15,9 @@ export default function LoginScreen() {
   const router = useRouter();
   const [email, setEmail]       = useState('');
   const [password, setPassword] = useState('');
+  const [fullName, setFullName] = useState('');
+  const [phone, setPhone]       = useState('');
+  const [state, setState]       = useState('');
   const [loading, setLoading]   = useState(false);
   const [isSignUp, setIsSignUp] = useState(false);
 
@@ -21,12 +26,25 @@ export default function LoginScreen() {
       Alert.alert('Error', 'Please enter email and password');
       return;
     }
+    if (isSignUp && !fullName) {
+      Alert.alert('Error', 'Please enter your full name');
+      return;
+    }
     setLoading(true);
     try {
       if (isSignUp) {
-        const { error } = await supabase.auth.signUp({ email, password });
+        const { data, error } = await supabase.auth.signUp({ email, password });
         if (error) throw error;
-        Alert.alert('Success! 🎉', 'Account created! Please check your email to verify.');
+        if (data.user) {
+          await supabase.from('profiles').insert({
+            id: data.user.id,
+            full_name: fullName,
+            phone: phone,
+            state: state,
+          });
+        }
+        Alert.alert('Success! 🎉', 'Account created! You can now login.');
+        setIsSignUp(false);
       } else {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
@@ -41,58 +59,92 @@ export default function LoginScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.header}>
-        <View style={styles.logoCircle}>
-          <Text style={styles.logoEmoji}>🌿</Text>
+      <ScrollView showsVerticalScrollIndicator={false}>
+        <View style={styles.header}>
+          <View style={styles.logoCircle}>
+            <Text style={styles.logoEmoji}>🌿</Text>
+          </View>
+          <Text style={styles.appName}>Agrow</Text>
+          <Text style={styles.tagline}>Modern farming for every Indian farmer</Text>
         </View>
-        <Text style={styles.appName}>Agrow</Text>
-        <Text style={styles.tagline}>Modern farming for every Indian farmer</Text>
-      </View>
 
-      <View style={styles.form}>
-        <Text style={styles.formTitle}>{isSignUp ? 'Create Account' : 'Welcome Back'}</Text>
-        <Text style={styles.formSub}>{isSignUp ? 'Join thousands of modern farmers' : 'Login to continue your farming journey'}</Text>
+        <View style={styles.form}>
+          <Text style={styles.formTitle}>{isSignUp ? 'Create Account' : 'Welcome Back'}</Text>
+          <Text style={styles.formSub}>{isSignUp ? 'Join thousands of modern farmers' : 'Login to continue your farming journey'}</Text>
 
-        <Text style={styles.label}>Email</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="your@email.com"
-          placeholderTextColor="#aaa"
-          value={email}
-          onChangeText={setEmail}
-          keyboardType="email-address"
-          autoCapitalize="none"
-        />
+          {isSignUp && (
+            <>
+              <Text style={styles.label}>Full Name *</Text>
+              <TextInput
+                style={styles.input}
+                placeholder="Your full name"
+                placeholderTextColor="#aaa"
+                value={fullName}
+                onChangeText={setFullName}
+              />
 
-        <Text style={styles.label}>Password</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Enter your password"
-          placeholderTextColor="#aaa"
-          value={password}
-          onChangeText={setPassword}
-          secureTextEntry
-        />
+              <Text style={styles.label}>Phone Number</Text>
+              <TextInput
+                style={styles.input}
+                placeholder="Your phone number"
+                placeholderTextColor="#aaa"
+                value={phone}
+                onChangeText={setPhone}
+                keyboardType="phone-pad"
+              />
 
-        <TouchableOpacity
-          style={styles.authButton}
-          onPress={handleAuth}
-          disabled={loading}>
-          {loading
-            ? <ActivityIndicator color="#fff" />
-            : <Text style={styles.authButtonText}>{isSignUp ? 'Create Account' : 'Login'}</Text>
-          }
-        </TouchableOpacity>
+              <Text style={styles.label}>State</Text>
+              <TextInput
+                style={styles.input}
+                placeholder="e.g. Uttarakhand, Punjab, Maharashtra"
+                placeholderTextColor="#aaa"
+                value={state}
+                onChangeText={setState}
+              />
+            </>
+          )}
 
-        <TouchableOpacity
-          style={styles.switchButton}
-          onPress={() => setIsSignUp(!isSignUp)}>
-          <Text style={styles.switchText}>
-            {isSignUp ? 'Already have an account? ' : "Don't have an account? "}
-            <Text style={styles.switchLink}>{isSignUp ? 'Login' : 'Sign Up'}</Text>
-          </Text>
-        </TouchableOpacity>
-      </View>
+          <Text style={styles.label}>Email *</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="your@email.com"
+            placeholderTextColor="#aaa"
+            value={email}
+            onChangeText={setEmail}
+            keyboardType="email-address"
+            autoCapitalize="none"
+          />
+
+          <Text style={styles.label}>Password *</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Enter your password"
+            placeholderTextColor="#aaa"
+            value={password}
+            onChangeText={setPassword}
+            secureTextEntry
+          />
+
+          <TouchableOpacity
+            style={styles.authButton}
+            onPress={handleAuth}
+            disabled={loading}>
+            {loading
+              ? <ActivityIndicator color="#fff" />
+              : <Text style={styles.authButtonText}>{isSignUp ? 'Create Account' : 'Login'}</Text>
+            }
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.switchButton}
+            onPress={() => setIsSignUp(!isSignUp)}>
+            <Text style={styles.switchText}>
+              {isSignUp ? 'Already have an account? ' : "Don't have an account? "}
+              <Text style={styles.switchLink}>{isSignUp ? 'Login' : 'Sign Up'}</Text>
+            </Text>
+          </TouchableOpacity>
+        </View>
+      </ScrollView>
     </SafeAreaView>
   );
 }
@@ -111,7 +163,7 @@ const styles = StyleSheet.create({
   input:          { backgroundColor: '#fff', borderRadius: 12, padding: 16, fontSize: 15, color: '#1a1a1a', marginBottom: 16, elevation: 2 },
   authButton:     { backgroundColor: '#1a6b3c', padding: 18, borderRadius: 12, alignItems: 'center', marginTop: 8, elevation: 2 },
   authButtonText: { color: '#fff', fontSize: 16, fontWeight: '700' },
-  switchButton:   { marginTop: 20, alignItems: 'center' },
+  switchButton:   { marginTop: 20, alignItems: 'center', marginBottom: 40 },
   switchText:     { fontSize: 14, color: '#888' },
   switchLink:     { color: '#1a6b3c', fontWeight: '700' },
 });

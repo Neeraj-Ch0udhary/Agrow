@@ -16,6 +16,9 @@ export default function HomeScreen() {
           <Text style={styles.appName}>Agrow</Text>
         </View>
         <Text style={styles.tagline}>From land to marketplace</Text>
+        <TouchableOpacity style={styles.profileButton} onPress={() => router.push('/profile')}>
+          <Text style={styles.profileButtonText}>👤 My Profile</Text>
+        </TouchableOpacity>
       </View>
 
       <View style={styles.welcomeCard}>
@@ -69,6 +72,8 @@ export default function HomeScreen() {
 }
 
 const styles = StyleSheet.create({
+  profileButton:     { marginTop: 14, backgroundColor: '#155e34', paddingHorizontal: 16, paddingVertical: 8, borderRadius: 20, alignSelf: 'flex-start' },
+profileButtonText: { color: '#a8d5b5', fontSize: 13, fontWeight: '600' },
   container: { flex: 1, backgroundColor: '#f5f7f5' },
   header: { backgroundColor: '#1a6b3c', paddingTop: 60, paddingBottom: 30, paddingHorizontal: 24 },
   logoRow: { flexDirection: 'row', alignItems: 'center', gap: 10, marginBottom: 8 },
