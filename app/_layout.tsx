@@ -4,6 +4,7 @@ export default function RootLayout() {
   return (
     <Stack screenOptions={{ headerShown: false }}>
       <Stack.Screen name="index" />
+      <Stack.Screen name="onboarding" />
       <Stack.Screen name="splash" />
       <Stack.Screen name="login" />
       <Stack.Screen name="(tabs)" />
@@ -11,8 +12,8 @@ export default function RootLayout() {
       <Stack.Screen name="learn" />
       <Stack.Screen name="grow" />
       <Stack.Screen name="sell" />
-      <Stack.Screen name="profile" />
       <Stack.Screen name="mandi" />
+      <Stack.Screen name="profile" />
     </Stack>
   );
 }
