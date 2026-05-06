@@ -65,6 +65,14 @@ export default function HomeScreen() {
         </View>
         <Text style={styles.arrow}>›</Text>
       </TouchableOpacity>
+      <TouchableOpacity style={[styles.stageCard, { borderLeftColor: '#1565c0' }]} onPress={() => router.push('/mandi')}>
+  <Text style={styles.stageEmoji}>📈</Text>
+  <View style={styles.stageText}>
+    <Text style={styles.stageTitleText}>Mandi Prices</Text>
+    <Text style={styles.stageDesc}>Live crop prices from mandis across India</Text>
+  </View>
+  <Text style={styles.arrow}>›</Text>
+</TouchableOpacity>
 
       <View style={{ height: 40 }} />
     </ScrollView>
