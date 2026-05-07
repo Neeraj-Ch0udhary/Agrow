@@ -18,6 +18,7 @@ export default function RootLayout() {
         <Stack.Screen name="profile" />
         <Stack.Screen name="chat" />
         <Stack.Screen name="disease" />
+        <Stack.Screen name="plan" />
       </Stack>
     </LanguageProvider>
   );

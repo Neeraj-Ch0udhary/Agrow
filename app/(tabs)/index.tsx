@@ -98,6 +98,15 @@ export default function HomeScreen() {
         <Text style={styles.arrow}>›</Text>
       </TouchableOpacity>
 
+      <TouchableOpacity style={[styles.stageCard, { borderLeftColor: '#ff6f00' }]} onPress={() => router.push('/plan')}>
+        <Text style={styles.stageEmoji}>📋</Text>
+        <View style={styles.stageText}>
+          <Text style={styles.stageTitleText}>Farming Plan</Text>
+          <Text style={styles.stageDesc}>AI generates your complete farming plan</Text>
+        </View>
+        <Text style={styles.arrow}>›</Text>
+      </TouchableOpacity>
+
       <View style={{ height: 40 }} />
     </ScrollView>
   );
