@@ -1,0 +1,211 @@
+{
+  "common": {
+    "appName": "Agrow",
+    "tagline": "From land to marketplace",
+    "back": "← Back",
+    "loading": "Loading...",
+    "cancel": "Cancel",
+    "retry": "🔄 Try Again",
+    "save": "Save",
+    "next": "Next →",
+    "skip": "Skip",
+    "getStarted": "🚀 Get Started",
+    "comingSoon": "Coming Soon"
+  },
+  "home": {
+    "namaste": "Namaste, Kisan! 👋",
+    "welcomeText": "Discover modern farming techniques that earn 3x more than traditional crops.",
+    "journeyTitle": "Your Farming Journey",
+    "cards": {
+      "land": { "title": "Land Assessment", "desc": "Find the best crop for your land & budget" },
+      "learn": { "title": "Learn & Plan", "desc": "Step-by-step guides for modern farming" },
+      "grow": { "title": "Grow", "desc": "Daily support while your crop is growing" },
+      "sell": { "title": "Sell", "desc": "Connect with buyers, get the best price" },
+      "mandi": { "title": "Mandi Prices", "desc": "Live crop prices from mandis across India" },
+      "calculator": { "title": "Profit Calculator", "desc": "See exactly how much you can earn" },
+      "chat": { "title": "Agrow AI", "desc": "Ask anything about farming — instant answers" },
+      "disease": { "title": "Disease Detector", "desc": "Take a photo → AI diagnoses your plant" },
+      "plan": { "title": "Farming Plan", "desc": "AI generates your complete farming plan" }
+    }
+  },
+  "onboarding": {
+    "slide1": {
+      "title": "Know Your Land",
+      "sub": "Find the most profitable crop for your land, budget and location in just 5 questions."
+    },
+    "slide2": {
+      "title": "Learn Modern Farming",
+      "sub": "Step-by-step guides for mushrooms, microgreens, stevia and more — earn 3x more than traditional crops."
+    },
+    "slide3": {
+      "title": "Sell Directly to Buyers",
+      "sub": "Connect with restaurants, supermarkets and buyers. Check live mandi prices and get the best deal."
+    }
+  },
+  "login": {
+    "welcomeBack": "Welcome Back",
+    "createAccount": "Create Account",
+    "loginSub": "Login to continue your farming journey",
+    "signupSub": "Join thousands of modern farmers",
+    "fullName": "Full Name *",
+    "phone": "Phone Number",
+    "state": "State",
+    "email": "Email *",
+    "password": "Password *",
+    "login": "Login",
+    "alreadyAccount": "Already have an account? ",
+    "noAccount": "Don't have an account? ",
+    "placeholders": {
+      "fullName": "Your full name",
+      "phone": "Your phone number",
+      "state": "e.g. Uttarakhand, Punjab, Maharashtra",
+      "email": "your@email.com",
+      "password": "Enter your password"
+    }
+  },
+  "land": {
+    "questions": [
+      {
+        "question": "How much land do you have?",
+        "emoji": "📐",
+        "options": ["Less than 500 sq ft", "500–2000 sq ft", "2000–5000 sq ft", "More than 5000 sq ft"]
+      },
+      {
+        "question": "What is your budget to start?",
+        "emoji": "💰",
+        "options": ["Under ₹5,000", "₹5,000–₹20,000", "₹20,000–₹50,000", "Above ₹50,000"]
+      },
+      {
+        "question": "What is your water availability?",
+        "emoji": "💧",
+        "options": ["Very limited", "Some water available", "Good water supply", "Abundant water"]
+      },
+      {
+        "question": "How much time can you give daily?",
+        "emoji": "⏰",
+        "options": ["Less than 1 hour", "1–2 hours", "2–4 hours", "Full time"]
+      },
+      {
+        "question": "Where is your land located?",
+        "emoji": "📍",
+        "options": ["Indoor / Terrace", "Small farm / Village", "Large open field", "Hilly / Forest area"]
+      }
+    ],
+    "questionLabel": "Question",
+    "of": "of",
+    "bestCrop": "Best crop for you",
+    "learnHow": "📚 Learn How to Grow"
+  },
+  "learn": {
+    "title": "📚 Crop Guides",
+    "subtitle": "Step-by-step guides for high-profit modern crops",
+    "readyIn": "⏱ Ready in",
+    "investment": "💰 Investment",
+    "howToStart": "How to start:"
+  },
+  "grow": {
+    "title": "🌱 Grow",
+    "subtitle": "Your daily farming support and task guide",
+    "proTip": "💡 Pro Tip",
+    "proTipText": "Complete your Land Assessment first to get a personalized growing plan.",
+    "timeline": "General Farming Timeline"
+  },
+  "sell": {
+    "title": "🏪 Marketplace",
+    "subtitle": "Find buyers and sell at the best price",
+    "comingSoon": "🚀 Live Marketplace — Coming Soon",
+    "comingSoonSub": "List your harvest and connect directly with verified buyers near you.",
+    "whoToSell": "Who to sell to right now",
+    "theyWant": "They want: "
+  },
+  "mandi": {
+    "title": "📈 Mandi Prices",
+    "subtitle": "Pull down to refresh prices",
+    "topGainer": "🔼 Top Gainer",
+    "topLoser": "🔽 Top Loser",
+    "search": "Search crop or state...",
+    "note": "💡 Prices are indicative. Always verify with your local mandi before selling."
+  },
+  "calculator": {
+    "title": "💰 Profit Calculator",
+    "landSize": "📐 Enter Your Land Size",
+    "selectCrop": "Select Your Crop",
+    "calculate": "💰 Calculate My Profit",
+    "monthlyProfit": "Expected Monthly Profit",
+    "yearlyProfit": "Yearly Profit",
+    "roi": "Monthly ROI",
+    "breakEven": "Break Even",
+    "breakdown": "📊 Full Breakdown",
+    "investment": "💸 Investment",
+    "setupCost": "Setup Cost (one time)",
+    "runningCost": "Monthly Running Cost",
+    "revenue": "💰 Revenue",
+    "yield": "Monthly Yield",
+    "monthlyRevenue": "Monthly Revenue",
+    "netProfit": "Net Monthly Profit",
+    "vsTraditional": "📊 vs Traditional Farming",
+    "traditionalWheat": "Traditional Wheat",
+    "learnBtn": "📚 Learn How to Grow",
+    "planBtn": "📋 Get My Full Farming Plan",
+    "resetBtn": "🔄 Calculate Another Crop"
+  },
+  "chat": {
+    "title": "🤖 Agrow AI",
+    "subtitle": "Your farming assistant",
+    "placeholder": "Ask anything about farming...",
+    "welcome": "Namaste! 🌱 I am Agrow AI, your personal farming assistant. Ask me anything about modern farming, crop diseases, profits, or how to sell your harvest!",
+    "thinking": "Thinking...",
+    "aiLabel": "🌱 Agrow AI"
+  },
+  "disease": {
+    "title": "🔍 Disease Detector",
+    "subtitle": "AI powered plant diagnosis",
+    "introTitle": "Detect Plant Diseases Instantly",
+    "introText": "Take a photo of your plant and our AI will identify any disease, suggest treatment, and help you save your crop.",
+    "howItWorks": "How it works",
+    "chooseSource": "Choose image source",
+    "takePhoto": "Take a Photo",
+    "takePhotoSub": "Use your camera for best results",
+    "gallery": "Choose from Gallery",
+    "gallerySub": "Pick an existing photo",
+    "tips": "📸 Photo Tips for Best Results",
+    "analyzing": "Analyzing your plant... 🤖",
+    "analyzingSub": "Our AI is examining the image for diseases",
+    "result": "🔍 Analysis Result",
+    "analyzeAnother": "📷 Analyze Another Plant",
+    "askAI": "🤖 Ask Agrow AI for More Help"
+  },
+  "plan": {
+    "title": "📋 Farming Plan",
+    "ready": "Your Personalized Plan is Ready!",
+    "readySub": "Generated by Agrow AI based on your details",
+    "generate": "🤖 Generate My Farming Plan",
+    "newPlan": "🔄 Generate New Plan",
+    "introTitle": "Get Your Personalized Farming Plan",
+    "introText": "Answer a few questions and our AI will create a complete farming plan.",
+    "location": "📍 Your Location / State",
+    "locationPlaceholder": "e.g. Uttarakhand, Punjab, Maharashtra",
+    "cropOptional": "🌱 Preferred Crop (optional)",
+    "cropPlaceholder": "e.g. Mushroom, Microgreens, or leave blank",
+    "start": "Start — Tell us about your land →",
+    "loading": "Creating your plan... 🤖",
+    "loadingSub": "Agrow AI is building a personalized farming plan just for you",
+    "askAI": "🤖 Ask Agrow AI Questions"
+  },
+  "profile": {
+    "yourDetails": "Your Details",
+    "phone": "📱 Phone",
+    "state": "📍 State",
+    "email": "✉️ Email",
+    "notAdded": "Not added",
+    "journey": "Your Farming Journey",
+    "currentCrop": "Current Crop",
+    "noCrop": "No crop selected yet",
+    "assessment": "Take Land Assessment →",
+    "guides": "Guides Read",
+    "days": "Days Farming",
+    "income": "Est. Income",
+    "logout": "🚪 Logout",
+    "logoutConfirm": "Are you sure you want to logout?"
+  }
+}

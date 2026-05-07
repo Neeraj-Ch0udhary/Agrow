@@ -1,22 +1,9 @@
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-const QUESTIONS = [
-  { id: 1, question: 'How much land do you have?', emoji: '📐', options: ['Less than 500 sq ft', '500–2000 sq ft', '2000–5000 sq ft', 'More than 5000 sq ft'] },
-  { id: 2, question: 'What is your budget to start?', emoji: '💰', options: ['Under ₹5,000', '₹5,000–₹20,000', '₹20,000–₹50,000', 'Above ₹50,000'] },
-  { id: 3, question: 'What is your water availability?', emoji: '💧', options: ['Very limited', 'Some water available', 'Good water supply', 'Abundant water'] },
-  { id: 4, question: 'How much time can you give daily?', emoji: '⏰', options: ['Less than 1 hour', '1–2 hours', '2–4 hours', 'Full time'] },
-  { id: 5, question: 'Where is your land located?', emoji: '📍', options: ['Indoor / Terrace', 'Small farm / Village', 'Large open field', 'Hilly / Forest area'] },
-];
-
-type Result = {
-  crop: string;
-  emoji: string;
-  profit: string;
-  reason: string;
-  color: string;
-};
+type Result = { crop: string; emoji: string; profit: string; reason: string; color: string; };
 
 const RESULTS: Record<string, Result> = {
   small_low:   { crop: 'Oyster Mushrooms',  emoji: '🍄', profit: '₹8,000–15,000/month',  reason: 'Perfect for small indoor spaces with low investment. Ready in 45 days!', color: '#7b5ea7' },
@@ -28,35 +15,30 @@ const RESULTS: Record<string, Result> = {
 };
 
 function getResult(answers: number[]): Result {
-  const land = answers[0];
-  const budget = answers[1];
-  const isSmall  = land <= 1;
-  const isMedium = land === 2;
-  const isLarge  = land >= 3;
-  const isLowBudget  = budget <= 1;
-  const isHighBudget = budget >= 2;
-  if (isSmall  && isLowBudget)  return RESULTS.small_low;
-  if (isSmall  && isHighBudget) return RESULTS.small_high;
-  if (isMedium && isLowBudget)  return RESULTS.medium_low;
+  const land = answers[0]; const budget = answers[1];
+  const isSmall = land <= 1; const isMedium = land === 2; const isLarge = land >= 3;
+  const isLowBudget = budget <= 1; const isHighBudget = budget >= 2;
+  if (isSmall && isLowBudget) return RESULTS.small_low;
+  if (isSmall && isHighBudget) return RESULTS.small_high;
+  if (isMedium && isLowBudget) return RESULTS.medium_low;
   if (isMedium && isHighBudget) return RESULTS.medium_high;
-  if (isLarge  && isLowBudget)  return RESULTS.large_low;
+  if (isLarge && isLowBudget) return RESULTS.large_low;
   return RESULTS.large_high;
 }
 
 export default function LandScreen() {
   const router = useRouter();
+  const { t } = useTranslation();
   const [step, setStep]       = useState(0);
   const [answers, setAnswers] = useState<number[]>([]);
   const [result, setResult]   = useState<Result | null>(null);
 
+  const questions = t('land.questions', { returnObjects: true }) as any[];
+
   const handleAnswer = (index: number) => {
     const newAnswers = [...answers, index];
-    if (step < QUESTIONS.length - 1) {
-      setAnswers(newAnswers);
-      setStep(step + 1);
-    } else {
-      setResult(getResult(newAnswers));
-    }
+    if (step < questions.length - 1) { setAnswers(newAnswers); setStep(step + 1); }
+    else { setResult(getResult(newAnswers)); }
   };
 
   const reset = () => { setStep(0); setAnswers([]); setResult(null); };
@@ -65,12 +47,12 @@ export default function LandScreen() {
     return (
       <SafeAreaView style={styles.container}>
         <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
-          <Text style={styles.backText}>← Back</Text>
+          <Text style={styles.backText}>{t('common.back')}</Text>
         </TouchableOpacity>
         <ScrollView contentContainerStyle={styles.content}>
           <View style={[styles.resultCard, { borderColor: result.color }]}>
             <Text style={styles.resultEmoji}>{result.emoji}</Text>
-            <Text style={styles.resultLabel}>Best crop for you</Text>
+            <Text style={styles.resultLabel}>{t('land.bestCrop')}</Text>
             <Text style={[styles.resultCrop, { color: result.color }]}>{result.crop}</Text>
             <View style={[styles.profitBadge, { backgroundColor: result.color }]}>
               <Text style={styles.profitText}>💰 {result.profit}</Text>
@@ -78,33 +60,33 @@ export default function LandScreen() {
             <Text style={styles.resultReason}>{result.reason}</Text>
           </View>
           <TouchableOpacity style={styles.retryButton} onPress={reset}>
-            <Text style={styles.retryText}>🔄 Try Again</Text>
+            <Text style={styles.retryText}>{t('common.retry')}</Text>
           </TouchableOpacity>
           <TouchableOpacity style={[styles.retryButton, { backgroundColor: '#1a6b3c' }]} onPress={() => router.push('/learn')}>
-            <Text style={[styles.retryText, { color: '#fff' }]}>📚 Learn How to Grow {result.crop}</Text>
+            <Text style={[styles.retryText, { color: '#fff' }]}>{t('land.learnHow')} {result.crop}</Text>
           </TouchableOpacity>
         </ScrollView>
       </SafeAreaView>
     );
   }
 
-  const current = QUESTIONS[step];
+  const current = questions[step];
 
   return (
     <SafeAreaView style={styles.container}>
       <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
-        <Text style={styles.backText}>← Back</Text>
+        <Text style={styles.backText}>{t('common.back')}</Text>
       </TouchableOpacity>
       <ScrollView contentContainerStyle={styles.content}>
         <View style={styles.progressRow}>
-          {QUESTIONS.map((_, i) => (
+          {questions.map((_: any, i: number) => (
             <View key={i} style={[styles.progressDot, i <= step && { backgroundColor: '#1a6b3c' }]} />
           ))}
         </View>
-        <Text style={styles.stepLabel}>Question {step + 1} of {QUESTIONS.length}</Text>
+        <Text style={styles.stepLabel}>{t('land.questionLabel')} {step + 1} {t('land.of')} {questions.length}</Text>
         <Text style={styles.questionEmoji}>{current.emoji}</Text>
         <Text style={styles.questionText}>{current.question}</Text>
-        {current.options.map((option, index) => (
+        {current.options.map((option: string, index: number) => (
           <TouchableOpacity key={index} style={styles.optionButton} onPress={() => handleAnswer(index)}>
             <Text style={styles.optionText}>{option}</Text>
             <Text style={styles.optionArrow}>›</Text>

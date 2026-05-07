@@ -1,18 +1,12 @@
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
-import {
-    ActivityIndicator,
-    Alert,
-    SafeAreaView,
-    ScrollView,
-    StyleSheet,
-    Text, TextInput, TouchableOpacity,
-    View
-} from 'react-native';
+import { useTranslation } from 'react-i18next';
+import { ActivityIndicator, Alert, SafeAreaView, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { supabase } from '../lib/supabase';
 
 export default function LoginScreen() {
   const router = useRouter();
+  const { t } = useTranslation();
   const [email, setEmail]       = useState('');
   const [password, setPassword] = useState('');
   const [fullName, setFullName] = useState('');
@@ -22,26 +16,15 @@ export default function LoginScreen() {
   const [isSignUp, setIsSignUp] = useState(false);
 
   const handleAuth = async () => {
-    if (!email || !password) {
-      Alert.alert('Error', 'Please enter email and password');
-      return;
-    }
-    if (isSignUp && !fullName) {
-      Alert.alert('Error', 'Please enter your full name');
-      return;
-    }
+    if (!email || !password) { Alert.alert('Error', 'Please enter email and password'); return; }
+    if (isSignUp && !fullName) { Alert.alert('Error', 'Please enter your full name'); return; }
     setLoading(true);
     try {
       if (isSignUp) {
         const { data, error } = await supabase.auth.signUp({ email, password });
         if (error) throw error;
         if (data.user) {
-          await supabase.from('profiles').insert({
-            id: data.user.id,
-            full_name: fullName,
-            phone: phone,
-            state: state,
-          });
+          await supabase.from('profiles').insert({ id: data.user.id, full_name: fullName, phone, state });
         }
         Alert.alert('Success! 🎉', 'Account created! You can now login.');
         setIsSignUp(false);
@@ -64,83 +47,39 @@ export default function LoginScreen() {
           <View style={styles.logoCircle}>
             <Text style={styles.logoEmoji}>🌿</Text>
           </View>
-          <Text style={styles.appName}>Agrow</Text>
-          <Text style={styles.tagline}>Modern farming for every Indian farmer</Text>
+          <Text style={styles.appName}>{t('common.appName')}</Text>
+          <Text style={styles.tagline}>{t('common.tagline')}</Text>
         </View>
 
         <View style={styles.form}>
-          <Text style={styles.formTitle}>{isSignUp ? 'Create Account' : 'Welcome Back'}</Text>
-          <Text style={styles.formSub}>{isSignUp ? 'Join thousands of modern farmers' : 'Login to continue your farming journey'}</Text>
+          <Text style={styles.formTitle}>{isSignUp ? t('login.createAccount') : t('login.welcomeBack')}</Text>
+          <Text style={styles.formSub}>{isSignUp ? t('login.signupSub') : t('login.loginSub')}</Text>
 
           {isSignUp && (
             <>
-              <Text style={styles.label}>Full Name *</Text>
-              <TextInput
-                style={styles.input}
-                placeholder="Your full name"
-                placeholderTextColor="#aaa"
-                value={fullName}
-                onChangeText={setFullName}
-              />
-
-              <Text style={styles.label}>Phone Number</Text>
-              <TextInput
-                style={styles.input}
-                placeholder="Your phone number"
-                placeholderTextColor="#aaa"
-                value={phone}
-                onChangeText={setPhone}
-                keyboardType="phone-pad"
-              />
-
-              <Text style={styles.label}>State</Text>
-              <TextInput
-                style={styles.input}
-                placeholder="e.g. Uttarakhand, Punjab, Maharashtra"
-                placeholderTextColor="#aaa"
-                value={state}
-                onChangeText={setState}
-              />
+              <Text style={styles.label}>{t('login.fullName')}</Text>
+              <TextInput style={styles.input} placeholder={t('login.placeholders.fullName')} placeholderTextColor="#aaa" value={fullName} onChangeText={setFullName} />
+              <Text style={styles.label}>{t('login.phone')}</Text>
+              <TextInput style={styles.input} placeholder={t('login.placeholders.phone')} placeholderTextColor="#aaa" value={phone} onChangeText={setPhone} keyboardType="phone-pad" />
+              <Text style={styles.label}>{t('login.state')}</Text>
+              <TextInput style={styles.input} placeholder={t('login.placeholders.state')} placeholderTextColor="#aaa" value={state} onChangeText={setState} />
             </>
           )}
 
-          <Text style={styles.label}>Email *</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="your@email.com"
-            placeholderTextColor="#aaa"
-            value={email}
-            onChangeText={setEmail}
-            keyboardType="email-address"
-            autoCapitalize="none"
-          />
+          <Text style={styles.label}>{t('login.email')}</Text>
+          <TextInput style={styles.input} placeholder={t('login.placeholders.email')} placeholderTextColor="#aaa" value={email} onChangeText={setEmail} keyboardType="email-address" autoCapitalize="none" />
 
-          <Text style={styles.label}>Password *</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="Enter your password"
-            placeholderTextColor="#aaa"
-            value={password}
-            onChangeText={setPassword}
-            secureTextEntry
-          />
+          <Text style={styles.label}>{t('login.password')}</Text>
+          <TextInput style={styles.input} placeholder={t('login.placeholders.password')} placeholderTextColor="#aaa" value={password} onChangeText={setPassword} secureTextEntry />
 
-          <TouchableOpacity
-            style={styles.authButton}
-            onPress={handleAuth}
-            disabled={loading}>
-            {loading
-              ? <ActivityIndicator color="#fff" />
-              : <Text style={styles.authButtonText}>{isSignUp ? 'Create Account' : 'Login'}</Text>
-            }
+          <TouchableOpacity style={styles.authButton} onPress={handleAuth} disabled={loading}>
+            {loading ? <ActivityIndicator color="#fff" /> : <Text style={styles.authButtonText}>{isSignUp ? t('login.createAccount') : t('login.login')}</Text>}
           </TouchableOpacity>
 
-          <TouchableOpacity
-            style={styles.switchButton}
-            onPress={() => setIsSignUp(!isSignUp)}>
+          <TouchableOpacity style={styles.switchButton} onPress={() => setIsSignUp(!isSignUp)}>
             <Text style={styles.switchText}>
-              {isSignUp ? 'Already have an account? ' : "Don't have an account? "}
-              <Text style={styles.switchLink}>{isSignUp ? 'Login' : 'Sign Up'}</Text>
+              {isSignUp ? t('login.alreadyAccount') : t('login.noAccount')}
+              <Text style={styles.switchLink}>{isSignUp ? t('login.login') : t('login.createAccount')}</Text>
             </Text>
           </TouchableOpacity>
         </View>

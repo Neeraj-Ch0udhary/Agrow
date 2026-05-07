@@ -1,166 +1,99 @@
 import { useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
-import {
-    ActivityIndicator, Alert,
-    SafeAreaView,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View
-} from 'react-native';
+import { useTranslation } from 'react-i18next';
+import { ActivityIndicator, Alert, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { supabase } from '../lib/supabase';
 
-type Profile = {
-  full_name: string;
-  phone: string;
-  state: string;
-  saved_crop: string;
-};
+type Profile = { full_name: string; phone: string; state: string; saved_crop: string; };
 
 export default function ProfileScreen() {
   const router = useRouter();
-  const [profile, setProfile]   = useState<Profile | null>(null);
-  const [email, setEmail]       = useState('');
-  const [loading, setLoading]   = useState(true);
+  const { t } = useTranslation();
+  const [profile, setProfile] = useState<Profile | null>(null);
+  const [email, setEmail]     = useState('');
+  const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    loadProfile();
-  }, []);
+  useEffect(() => { loadProfile(); }, []);
 
   const loadProfile = async () => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
       setEmail(user.email ?? '');
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', user.id)
-        .single();
+      const { data, error } = await supabase.from('profiles').select('*').eq('id', user.id).single();
       if (error) throw error;
       setProfile(data);
-    } catch (error: any) {
-      console.log('Profile error:', error.message);
-    } finally {
-      setLoading(false);
-    }
+    } catch (error: any) { console.log('Profile error:', error.message); }
+    finally { setLoading(false); }
   };
 
   const handleLogout = async () => {
-    Alert.alert('Logout', 'Are you sure you want to logout?', [
-      { text: 'Cancel', style: 'cancel' },
-      {
-        text: 'Logout', style: 'destructive', onPress: async () => {
-          await supabase.auth.signOut();
-          router.replace('/login');
-        }
-      }
+    Alert.alert(t('profile.logout'), t('profile.logoutConfirm'), [
+      { text: t('common.cancel'), style: 'cancel' },
+      { text: t('profile.logout'), style: 'destructive', onPress: async () => { await supabase.auth.signOut(); router.replace('/login'); } }
     ]);
   };
 
   if (loading) {
-    return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#f5f7f5' }}>
-        <ActivityIndicator color="#1a6b3c" size="large" />
-      </View>
-    );
+    return <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#f5f7f5' }}><ActivityIndicator color="#1a6b3c" size="large" /></View>;
   }
 
   return (
     <SafeAreaView style={styles.container}>
       <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
-        <Text style={styles.backText}>← Back</Text>
+        <Text style={styles.backText}>{t('common.back')}</Text>
       </TouchableOpacity>
-
       <ScrollView showsVerticalScrollIndicator={false}>
-
-        {/* Profile Header */}
         <View style={styles.profileHeader}>
           <View style={styles.avatarCircle}>
-            <Text style={styles.avatarText}>
-              {profile?.full_name ? profile.full_name[0].toUpperCase() : '🌿'}
-            </Text>
+            <Text style={styles.avatarText}>{profile?.full_name ? profile.full_name[0].toUpperCase() : '🌿'}</Text>
           </View>
           <Text style={styles.profileName}>{profile?.full_name ?? 'Kisan'}</Text>
           <Text style={styles.profileEmail}>{email}</Text>
-          {profile?.state && (
-            <View style={styles.stateBadge}>
-              <Text style={styles.stateBadgeText}>📍 {profile.state}</Text>
-            </View>
-          )}
+          {profile?.state && <View style={styles.stateBadge}><Text style={styles.stateBadgeText}>📍 {profile.state}</Text></View>}
         </View>
 
-        {/* Info Cards */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Your Details</Text>
-
+          <Text style={styles.sectionTitle}>{t('profile.yourDetails')}</Text>
           <View style={styles.infoCard}>
-            <View style={styles.infoRow}>
-              <Text style={styles.infoLabel}>📱 Phone</Text>
-              <Text style={styles.infoValue}>{profile?.phone || 'Not added'}</Text>
-            </View>
+            <View style={styles.infoRow}><Text style={styles.infoLabel}>{t('profile.phone')}</Text><Text style={styles.infoValue}>{profile?.phone || t('profile.notAdded')}</Text></View>
             <View style={styles.divider} />
-            <View style={styles.infoRow}>
-              <Text style={styles.infoLabel}>📍 State</Text>
-              <Text style={styles.infoValue}>{profile?.state || 'Not added'}</Text>
-            </View>
+            <View style={styles.infoRow}><Text style={styles.infoLabel}>{t('profile.state')}</Text><Text style={styles.infoValue}>{profile?.state || t('profile.notAdded')}</Text></View>
             <View style={styles.divider} />
-            <View style={styles.infoRow}>
-              <Text style={styles.infoLabel}>✉️ Email</Text>
-              <Text style={styles.infoValue}>{email}</Text>
-            </View>
+            <View style={styles.infoRow}><Text style={styles.infoLabel}>{t('profile.email')}</Text><Text style={styles.infoValue}>{email}</Text></View>
           </View>
         </View>
 
-        {/* Saved Crop */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Your Farming Journey</Text>
+          <Text style={styles.sectionTitle}>{t('profile.journey')}</Text>
           <View style={styles.cropCard}>
             {profile?.saved_crop ? (
               <>
                 <Text style={styles.cropEmoji}>🌱</Text>
-                <Text style={styles.cropTitle}>Current Crop</Text>
+                <Text style={styles.cropTitle}>{t('profile.currentCrop')}</Text>
                 <Text style={styles.cropName}>{profile.saved_crop}</Text>
               </>
             ) : (
               <>
                 <Text style={styles.cropEmoji}>🌍</Text>
-                <Text style={styles.cropTitle}>No crop selected yet</Text>
-                <TouchableOpacity
-                  style={styles.startButton}
-                  onPress={() => router.push('/land')}>
-                  <Text style={styles.startButtonText}>Take Land Assessment →</Text>
+                <Text style={styles.cropTitle}>{t('profile.noCrop')}</Text>
+                <TouchableOpacity style={styles.startButton} onPress={() => router.push('/land')}>
+                  <Text style={styles.startButtonText}>{t('profile.assessment')}</Text>
                 </TouchableOpacity>
               </>
             )}
           </View>
         </View>
 
-        {/* Stats Row */}
         <View style={styles.statsRow}>
-          <View style={styles.statCard}>
-            <Text style={styles.statEmoji}>📚</Text>
-            <Text style={styles.statLabel}>Guides Read</Text>
-            <Text style={styles.statValue}>4</Text>
-          </View>
-          <View style={styles.statCard}>
-            <Text style={styles.statEmoji}>🌱</Text>
-            <Text style={styles.statLabel}>Days Farming</Text>
-            <Text style={styles.statValue}>0</Text>
-          </View>
-          <View style={styles.statCard}>
-            <Text style={styles.statEmoji}>💰</Text>
-            <Text style={styles.statLabel}>Est. Income</Text>
-            <Text style={styles.statValue}>₹0</Text>
-          </View>
+          <View style={styles.statCard}><Text style={styles.statEmoji}>📚</Text><Text style={styles.statLabel}>{t('profile.guides')}</Text><Text style={styles.statValue}>4</Text></View>
+          <View style={styles.statCard}><Text style={styles.statEmoji}>🌱</Text><Text style={styles.statLabel}>{t('profile.days')}</Text><Text style={styles.statValue}>0</Text></View>
+          <View style={styles.statCard}><Text style={styles.statEmoji}>💰</Text><Text style={styles.statLabel}>{t('profile.income')}</Text><Text style={styles.statValue}>₹0</Text></View>
         </View>
 
-        {/* Logout */}
         <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
-          <Text style={styles.logoutText}>🚪 Logout</Text>
+          <Text style={styles.logoutText}>{t('profile.logout')}</Text>
         </TouchableOpacity>
-
         <View style={{ height: 40 }} />
       </ScrollView>
     </SafeAreaView>

@@ -1,46 +1,22 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
 import { useRef, useState } from 'react';
-import {
-    Dimensions,
-    SafeAreaView,
-    ScrollView, StatusBar,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View
-} from 'react-native';
+import { useTranslation } from 'react-i18next';
+import { Dimensions, SafeAreaView, ScrollView, StatusBar, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 const { width } = Dimensions.get('window');
 
-const SLIDES = [
-  {
-    emoji: '🌍',
-    title: 'Know Your Land',
-    subtitle: 'Find the most profitable crop for your land, budget and location in just 5 questions.',
-    bg: '#1a6b3c',
-    accent: '#4caf50',
-  },
-  {
-    emoji: '📚',
-    title: 'Learn Modern Farming',
-    subtitle: 'Step-by-step guides for mushrooms, microgreens, stevia and more — earn 3x more than traditional crops.',
-    bg: '#1565c0',
-    accent: '#42a5f5',
-  },
-  {
-    emoji: '🏪',
-    title: 'Sell Directly to Buyers',
-    subtitle: 'Connect with restaurants, supermarkets and buyers. Check live mandi prices and get the best deal.',
-    bg: '#e65100',
-    accent: '#ffa726',
-  },
-];
-
 export default function OnboardingScreen() {
   const router = useRouter();
+  const { t } = useTranslation();
   const [current, setCurrent] = useState(0);
   const scrollRef = useRef<ScrollView>(null);
+
+  const SLIDES = [
+    { emoji: '🌍', titleKey: 'onboarding.slide1.title', subKey: 'onboarding.slide1.sub', bg: '#1a6b3c', accent: '#4caf50' },
+    { emoji: '📚', titleKey: 'onboarding.slide2.title', subKey: 'onboarding.slide2.sub', bg: '#1565c0', accent: '#42a5f5' },
+    { emoji: '🏪', titleKey: 'onboarding.slide3.title', subKey: 'onboarding.slide3.sub', bg: '#e65100', accent: '#ffa726' },
+  ];
 
   const goNext = () => {
     if (current < SLIDES.length - 1) {
@@ -67,69 +43,48 @@ export default function OnboardingScreen() {
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: slide.bg }]}>
       <StatusBar barStyle="light-content" backgroundColor={slide.bg} />
-
-      {/* Skip Button */}
       <TouchableOpacity style={styles.skipButton} onPress={finishOnboarding}>
-        <Text style={styles.skipText}>Skip</Text>
+        <Text style={styles.skipText}>{t('common.skip')}</Text>
       </TouchableOpacity>
 
-      {/* Slides */}
       <ScrollView
         ref={scrollRef}
-        horizontal
-        pagingEnabled
+        horizontal pagingEnabled
         showsHorizontalScrollIndicator={false}
-        onMomentumScrollEnd={onScroll}
-        scrollEventThrottle={16}>
+        onMomentumScrollEnd={onScroll}>
         {SLIDES.map((s, i) => (
           <View key={i} style={[styles.slide, { width }]}>
-            {/* Big Emoji */}
             <View style={[styles.emojiCircle, { borderColor: s.accent }]}>
               <Text style={styles.slideEmoji}>{s.emoji}</Text>
             </View>
-
-            {/* App name on first slide */}
             {i === 0 && (
               <View style={styles.logoRow}>
                 <Text style={styles.logoLeaf}>🌿</Text>
-                <Text style={styles.logoName}>Agrow</Text>
+                <Text style={styles.logoName}>{t('common.appName')}</Text>
               </View>
             )}
-
-            <Text style={styles.slideTitle}>{s.title}</Text>
-            <Text style={styles.slideSubtitle}>{s.subtitle}</Text>
+            <Text style={styles.slideTitle}>{t(s.titleKey)}</Text>
+            <Text style={styles.slideSubtitle}>{t(s.subKey)}</Text>
           </View>
         ))}
       </ScrollView>
 
-      {/* Dots */}
       <View style={styles.dotsRow}>
         {SLIDES.map((_, i) => (
-          <TouchableOpacity
-            key={i}
-            onPress={() => {
-              scrollRef.current?.scrollTo({ x: i * width, animated: true });
-              setCurrent(i);
-            }}>
-            <View style={[
-              styles.dot,
-              i === current && styles.dotActive,
-              { backgroundColor: i === current ? '#fff' : 'rgba(255,255,255,0.3)' }
-            ]} />
+          <TouchableOpacity key={i} onPress={() => {
+            scrollRef.current?.scrollTo({ x: i * width, animated: true });
+            setCurrent(i);
+          }}>
+            <View style={[styles.dot, { backgroundColor: i === current ? '#fff' : 'rgba(255,255,255,0.3)' }, i === current && styles.dotActive]} />
           </TouchableOpacity>
         ))}
       </View>
 
-      {/* Next / Get Started Button */}
-      <TouchableOpacity
-        style={[styles.nextButton, { backgroundColor: slide.accent }]}
-        onPress={goNext}>
+      <TouchableOpacity style={[styles.nextButton, { backgroundColor: slide.accent }]} onPress={goNext}>
         <Text style={styles.nextButtonText}>
-          {current === SLIDES.length - 1 ? '🚀 Get Started' : 'Next →'}
+          {current === SLIDES.length - 1 ? t('common.getStarted') : t('common.next')}
         </Text>
       </TouchableOpacity>
-
-      {/* Bottom spacing */}
       <View style={{ height: 32 }} />
     </SafeAreaView>
   );

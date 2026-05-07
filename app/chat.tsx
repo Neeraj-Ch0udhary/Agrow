@@ -1,44 +1,12 @@
 import { useRouter } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
-import {
-    ActivityIndicator, KeyboardAvoidingView, Platform,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TextInput, TouchableOpacity,
-    View
-} from 'react-native';
+import { useTranslation } from 'react-i18next';
+import { ActivityIndicator, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { askGemini } from '../lib/gemini';
-type Message = {
-  role: 'user' | 'ai';
-  text: string;
-};
-<TouchableOpacity
-  style={{ backgroundColor: 'red', padding: 10, margin: 10, borderRadius: 8 }}
-  onPress={async () => {
-    try {
-      console.log('Testing API...');
-      const res = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=AIzaSyDZBR44oZFSJbNFpXL2Ecm2uNnpxfsQAXg`,
-        {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            contents: [{ parts: [{ text: 'Say hello' }] }]
-          })
-        }
-      );
-      const data = await res.json();
-      console.log('SUCCESS:', JSON.stringify(data));
-      alert('SUCCESS: ' + JSON.stringify(data).slice(0, 200));
-    } catch (e: any) {
-      console.log('FAILED:', e.message);
-      alert('FAILED: ' + e.message);
-    }
-  }}>
-  <Text style={{ color: 'white', textAlign: 'center' }}>Test API</Text>
-</TouchableOpacity>
+
+type Message = { role: 'user' | 'ai'; text: string; };
+
 const QUICK_QUESTIONS = [
   'How to grow oyster mushrooms?',
   'Best crop for small land?',
@@ -48,115 +16,75 @@ const QUICK_QUESTIONS = [
 
 export default function ChatScreen() {
   const router = useRouter();
+  const { t } = useTranslation();
   const scrollRef = useRef<ScrollView>(null);
   const [messages, setMessages] = useState<Message[]>([
-    { role: 'ai', text: 'Namaste! 🌱 I am Agrow AI, your personal farming assistant. Ask me anything about modern farming, crop diseases, profits, or how to sell your harvest!' }
+    { role: 'ai', text: t('chat.welcome') }
   ]);
-  const [input, setInput] = useState('');
+  const [input, setInput]   = useState('');
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    scrollRef.current?.scrollToEnd({ animated: true });
-  }, [messages]);
+  useEffect(() => { scrollRef.current?.scrollToEnd({ animated: true }); }, [messages]);
 
   const sendMessage = async (text?: string) => {
-  const question = text || input.trim();
-  if (!question || loading) return;
-
-  const userMsg: Message = { role: 'user', text: question };
-  setMessages(prev => [...prev, userMsg]);
-  setInput('');
-  setLoading(true);
-
-  try {
-    const response = await askGemini(question);
-    setMessages(prev => [...prev, { role: 'ai', text: response }]);
-  } catch (error) {
-    setMessages(prev => [...prev, {
-      role: 'ai',
-      text: 'Sorry, I could not connect right now. Please check your internet and try again.'
-    }]);
-  } finally {
-    setLoading(false);
-  }
-};
+    const question = text || input.trim();
+    if (!question || loading) return;
+    setMessages(prev => [...prev, { role: 'user', text: question }]);
+    setInput('');
+    setLoading(true);
+    try {
+      const response = await askGemini(question);
+      setMessages(prev => [...prev, { role: 'ai', text: response }]);
+    } catch {
+      setMessages(prev => [...prev, { role: 'ai', text: 'Sorry, could not connect. Please try again.' }]);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <SafeAreaView style={styles.container}>
-      {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity onPress={() => router.back()}>
-          <Text style={styles.backText}>← Back</Text>
+          <Text style={styles.backText}>{t('common.back')}</Text>
         </TouchableOpacity>
         <View style={styles.headerCenter}>
-          <Text style={styles.headerTitle}>🤖 Agrow AI</Text>
-          <Text style={styles.headerSub}>Your farming assistant</Text>
+          <Text style={styles.headerTitle}>{t('chat.title')}</Text>
+          <Text style={styles.headerSub}>{t('chat.subtitle')}</Text>
         </View>
         <View style={styles.onlineDot} />
       </View>
 
-      <KeyboardAvoidingView
-        style={{ flex: 1 }}
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
-
-        {/* Messages */}
-        <ScrollView
-          ref={scrollRef}
-          style={styles.messageList}
-          contentContainerStyle={{ padding: 16 }}
-          showsVerticalScrollIndicator={false}>
-
+      <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+        <ScrollView ref={scrollRef} style={styles.messageList} contentContainerStyle={{ padding: 16 }} showsVerticalScrollIndicator={false}>
           {messages.map((msg, i) => (
             <View key={i} style={[styles.messageBubble, msg.role === 'user' ? styles.userBubble : styles.aiBubble]}>
-              {msg.role === 'ai' && <Text style={styles.aiLabel}>🌱 Agrow AI</Text>}
-              <Text style={[styles.messageText, msg.role === 'user' && styles.userText]}>
-                {msg.text}
-              </Text>
+              {msg.role === 'ai' && <Text style={styles.aiLabel}>{t('chat.aiLabel')}</Text>}
+              <Text style={[styles.messageText, msg.role === 'user' && styles.userText]}>{msg.text}</Text>
             </View>
           ))}
-
           {loading && (
             <View style={styles.aiBubble}>
-              <Text style={styles.aiLabel}>🌱 Agrow AI</Text>
+              <Text style={styles.aiLabel}>{t('chat.aiLabel')}</Text>
               <View style={styles.typingRow}>
                 <ActivityIndicator size="small" color="#1a6b3c" />
-                <Text style={styles.typingText}>Thinking...</Text>
+                <Text style={styles.typingText}>{t('chat.thinking')}</Text>
               </View>
             </View>
           )}
         </ScrollView>
 
-        {/* Quick Questions */}
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          style={styles.quickRow}
-          contentContainerStyle={{ paddingHorizontal: 16, gap: 8 }}>
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.quickRow} contentContainerStyle={{ paddingHorizontal: 16, gap: 8 }}>
           {QUICK_QUESTIONS.map((q, i) => (
-            <TouchableOpacity
-              key={i}
-              style={styles.quickChip}
-              onPress={() => sendMessage(q)}>
+            <TouchableOpacity key={i} style={styles.quickChip} onPress={() => sendMessage(q)}>
               <Text style={styles.quickChipText}>{q}</Text>
             </TouchableOpacity>
           ))}
         </ScrollView>
 
-        {/* Input */}
         <View style={styles.inputRow}>
-          <TextInput
-            style={styles.input}
-            placeholder="Ask anything about farming..."
-            placeholderTextColor="#aaa"
-            value={input}
-            onChangeText={setInput}
-            multiline
-            maxLength={500}
-          />
-          <TouchableOpacity
-            style={[styles.sendButton, (!input.trim() || loading) && styles.sendButtonDisabled]}
-            onPress={() => sendMessage()}
-            disabled={!input.trim() || loading}>
+          <TextInput style={styles.input} placeholder={t('chat.placeholder')} placeholderTextColor="#aaa" value={input} onChangeText={setInput} multiline maxLength={500} />
+          <TouchableOpacity style={[styles.sendButton, (!input.trim() || loading) && styles.sendButtonDisabled]} onPress={() => sendMessage()} disabled={!input.trim() || loading}>
             <Text style={styles.sendButtonText}>↑</Text>
           </TouchableOpacity>
         </View>
@@ -167,7 +95,7 @@ export default function ChatScreen() {
 
 const styles = StyleSheet.create({
   container:          { flex: 1, backgroundColor: '#f5f7f5' },
-  header:             { backgroundColor: '#1a6b3c', paddingTop: 52, paddingBottom: 14, paddingHorizontal: 16, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+  header:             { backgroundColor: '#1a6b3c', paddingTop: 8, paddingBottom: 14, paddingHorizontal: 16, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   backText:           { color: '#a8d5b5', fontSize: 15, fontWeight: '600' },
   headerCenter:       { alignItems: 'center' },
   headerTitle:        { fontSize: 17, fontWeight: '700', color: '#fff' },

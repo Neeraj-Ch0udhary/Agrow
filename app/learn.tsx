@@ -1,4 +1,5 @@
 import { useRouter } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 import { SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 const CROPS = [
@@ -10,16 +11,17 @@ const CROPS = [
 
 export default function LearnScreen() {
   const router = useRouter();
+  const { t } = useTranslation();
 
   return (
     <SafeAreaView style={styles.container}>
       <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
-        <Text style={styles.backText}>← Back</Text>
+        <Text style={styles.backText}>{t('common.back')}</Text>
       </TouchableOpacity>
       <ScrollView showsVerticalScrollIndicator={false}>
         <View style={styles.headerSection}>
-          <Text style={styles.headerTitle}>📚 Crop Guides</Text>
-          <Text style={styles.headerSub}>Step-by-step guides for high-profit modern crops</Text>
+          <Text style={styles.headerTitle}>{t('learn.title')}</Text>
+          <Text style={styles.headerSub}>{t('learn.subtitle')}</Text>
         </View>
         {CROPS.map((crop, i) => (
           <View key={i} style={[styles.cropCard, { borderLeftColor: crop.color }]}>
@@ -32,15 +34,15 @@ export default function LearnScreen() {
             </View>
             <View style={styles.cropStats}>
               <View style={styles.statBox}>
-                <Text style={styles.statLabel}>⏱ Ready in</Text>
+                <Text style={styles.statLabel}>{t('learn.readyIn')}</Text>
                 <Text style={styles.statValue}>{crop.time}</Text>
               </View>
               <View style={styles.statBox}>
-                <Text style={styles.statLabel}>💰 Investment</Text>
+                <Text style={styles.statLabel}>{t('learn.investment')}</Text>
                 <Text style={styles.statValue}>{crop.investment}</Text>
               </View>
             </View>
-            <Text style={styles.stepsTitle}>How to start:</Text>
+            <Text style={styles.stepsTitle}>{t('learn.howToStart')}</Text>
             {crop.steps.map((step, j) => (
               <View key={j} style={styles.stepRow}>
                 <View style={[styles.stepNum, { backgroundColor: crop.color }]}>
@@ -58,25 +60,25 @@ export default function LearnScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#f5f7f5' },
-  backButton: { padding: 16, paddingTop: 52 },
-  backText: { fontSize: 16, color: '#1a6b3c', fontWeight: '600' },
+  container:    { flex: 1, backgroundColor: '#f5f7f5' },
+  backButton:   { padding: 16, paddingTop: 52 },
+  backText:     { fontSize: 16, color: '#1a6b3c', fontWeight: '600' },
   headerSection: { paddingHorizontal: 20, paddingBottom: 16 },
-  headerTitle: { fontSize: 24, fontWeight: '700', color: '#1a1a1a', marginBottom: 6 },
-  headerSub: { fontSize: 14, color: '#888' },
-  cropCard: { backgroundColor: '#fff', marginHorizontal: 16, marginBottom: 16, borderRadius: 14, padding: 18, borderLeftWidth: 4, elevation: 2 },
-  cropHeader: { flexDirection: 'row', alignItems: 'center', marginBottom: 14 },
-  cropEmoji: { fontSize: 36, marginRight: 12 },
-  cropInfo: { flex: 1 },
-  cropName: { fontSize: 17, fontWeight: '700', color: '#1a1a1a', marginBottom: 4 },
-  cropProfit: { fontSize: 14, fontWeight: '600' },
-  cropStats: { flexDirection: 'row', gap: 12, marginBottom: 16 },
-  statBox: { flex: 1, backgroundColor: '#f9f9f9', borderRadius: 8, padding: 10 },
-  statLabel: { fontSize: 11, color: '#aaa', marginBottom: 4 },
-  statValue: { fontSize: 13, fontWeight: '600', color: '#1a1a1a' },
-  stepsTitle: { fontSize: 13, fontWeight: '600', color: '#888', marginBottom: 10 },
-  stepRow: { flexDirection: 'row', alignItems: 'flex-start', marginBottom: 10 },
-  stepNum: { width: 22, height: 22, borderRadius: 11, alignItems: 'center', justifyContent: 'center', marginRight: 10, marginTop: 1 },
-  stepNumText: { color: '#fff', fontSize: 11, fontWeight: '700' },
-  stepText: { flex: 1, fontSize: 13, color: '#444', lineHeight: 20 },
+  headerTitle:  { fontSize: 24, fontWeight: '700', color: '#1a1a1a', marginBottom: 6 },
+  headerSub:    { fontSize: 14, color: '#888' },
+  cropCard:     { backgroundColor: '#fff', marginHorizontal: 16, marginBottom: 16, borderRadius: 14, padding: 18, borderLeftWidth: 4, elevation: 2 },
+  cropHeader:   { flexDirection: 'row', alignItems: 'center', marginBottom: 14 },
+  cropEmoji:    { fontSize: 36, marginRight: 12 },
+  cropInfo:     { flex: 1 },
+  cropName:     { fontSize: 17, fontWeight: '700', color: '#1a1a1a', marginBottom: 4 },
+  cropProfit:   { fontSize: 14, fontWeight: '600' },
+  cropStats:    { flexDirection: 'row', gap: 12, marginBottom: 16 },
+  statBox:      { flex: 1, backgroundColor: '#f9f9f9', borderRadius: 8, padding: 10 },
+  statLabel:    { fontSize: 11, color: '#aaa', marginBottom: 4 },
+  statValue:    { fontSize: 13, fontWeight: '600', color: '#1a1a1a' },
+  stepsTitle:   { fontSize: 13, fontWeight: '600', color: '#888', marginBottom: 10 },
+  stepRow:      { flexDirection: 'row', alignItems: 'flex-start', marginBottom: 10 },
+  stepNum:      { width: 22, height: 22, borderRadius: 11, alignItems: 'center', justifyContent: 'center', marginRight: 10, marginTop: 1 },
+  stepNumText:  { color: '#fff', fontSize: 11, fontWeight: '700' },
+  stepText:     { flex: 1, fontSize: 13, color: '#444', lineHeight: 20 },
 });
