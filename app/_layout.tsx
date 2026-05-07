@@ -19,6 +19,7 @@ export default function RootLayout() {
         <Stack.Screen name="chat" />
         <Stack.Screen name="disease" />
         <Stack.Screen name="plan" />
+        <Stack.Screen name="calculator" />
       </Stack>
     </LanguageProvider>
   );

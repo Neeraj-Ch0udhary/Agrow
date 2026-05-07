@@ -81,6 +81,16 @@ export default function HomeScreen() {
         </View>
         <Text style={styles.arrow}>›</Text>
       </TouchableOpacity>
+
+      <TouchableOpacity style={[styles.stageCard, { borderLeftColor: '#f9a825' }]} onPress={() => router.push('/calculator')}>
+        <Text style={styles.stageEmoji}>💰</Text>
+        <View style={styles.stageText}>
+          <Text style={styles.stageTitleText}>Profit Calculator</Text>
+          <Text style={styles.stageDesc}>See exactly how much you can earn</Text>
+        </View>
+        <Text style={styles.arrow}>›</Text>
+      </TouchableOpacity>
+
       <TouchableOpacity style={[styles.stageCard, { borderLeftColor: '#7b5ea7' }]} onPress={() => router.push('/chat')}>
         <Text style={styles.stageEmoji}>🤖</Text>
         <View style={styles.stageText}>
