@@ -1,17 +1,26 @@
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Alert, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { supabase } from '../lib/supabase';
 
-type Result = { crop: string; emoji: string; profit: string; reason: string; color: string; };
-
+type Result = {
+  crop: string;
+  emoji: string;
+  profit: string;
+  reason: string;
+  color: string;
+  cycleDays: number;
+  profitMax: number;
+  investment: number;
+};
 const RESULTS: Record<string, Result> = {
-  small_low:   { crop: 'Oyster Mushrooms',  emoji: '🍄', profit: '₹8,000–15,000/month',  reason: 'Perfect for small indoor spaces with low investment. Ready in 45 days!', color: '#7b5ea7' },
-  small_high:  { crop: 'Microgreens',       emoji: '🌿', profit: '₹10,000–20,000/month', reason: 'Tiny space, huge profit. Ready in just 7–14 days and sells at premium prices.', color: '#4caf50' },
-  medium_low:  { crop: 'Stevia',            emoji: '🌱', profit: '₹15,000–25,000/month', reason: 'Low water, low cost, and massive demand from sugar-free product companies.', color: '#26a69a' },
-  medium_high: { crop: 'Exotic Vegetables', emoji: '🥦', profit: '₹20,000–40,000/month', reason: 'Broccoli, zucchini, colored capsicum — restaurants pay premium for local supply.', color: '#f5a623' },
-  large_low:   { crop: 'Lemongrass',        emoji: '🌾', profit: '₹25,000–50,000/month', reason: 'Low maintenance, drought resistant, huge demand from cosmetic & pharma industry.', color: '#66bb6a' },
-  large_high:  { crop: 'Hydroponics',       emoji: '💧', profit: '₹40,000–80,000/month', reason: 'Grow 4x more without soil. High investment but the highest returns in modern farming.', color: '#1a6b3c' },
+  small_low:   { crop: 'Oyster Mushrooms',  emoji: '🍄', profit: '₹8,000–15,000/month',  reason: 'Perfect for small indoor spaces with low investment. Ready in 45 days!', color: '#7b5ea7', cycleDays: 45,  profitMax: 15000, investment: 3000 },
+  small_high:  { crop: 'Microgreens',       emoji: '🌿', profit: '₹10,000–20,000/month', reason: 'Tiny space, huge profit. Ready in just 7–14 days and sells at premium prices.', color: '#4caf50', cycleDays: 14,  profitMax: 20000, investment: 2000 },
+  medium_low:  { crop: 'Stevia',            emoji: '🌱', profit: '₹15,000–25,000/month', reason: 'Low water, low cost, and massive demand from sugar-free product companies.', color: '#26a69a', cycleDays: 90,  profitMax: 25000, investment: 5000 },
+  medium_high: { crop: 'Exotic Vegetables', emoji: '🥦', profit: '₹20,000–40,000/month', reason: 'Broccoli, zucchini, colored capsicum — restaurants pay premium for local supply.', color: '#f5a623', cycleDays: 75,  profitMax: 40000, investment: 10000 },
+  large_low:   { crop: 'Lemongrass',        emoji: '🌾', profit: '₹25,000–50,000/month', reason: 'Low maintenance, drought resistant, huge demand from cosmetic & pharma industry.', color: '#66bb6a', cycleDays: 90,  profitMax: 50000, investment: 8000 },
+  large_high:  { crop: 'Hydroponics',       emoji: '💧', profit: '₹40,000–80,000/month', reason: 'Grow 4x more without soil. High investment but the highest returns in modern farming.', color: '#1a6b3c', cycleDays: 60,  profitMax: 80000, investment: 50000 },
 };
 
 function getResult(answers: number[]): Result {
@@ -60,11 +69,31 @@ export default function LandScreen() {
             <Text style={styles.resultReason}>{result.reason}</Text>
           </View>
           <TouchableOpacity style={styles.retryButton} onPress={reset}>
-            <Text style={styles.retryText}>{t('common.retry')}</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={[styles.retryButton, { backgroundColor: '#1a6b3c' }]} onPress={() => router.push('/learn')}>
-            <Text style={[styles.retryText, { color: '#fff' }]}>{t('land.learnHow')} {result.crop}</Text>
-          </TouchableOpacity>
+  <Text style={styles.retryText}>{t('common.retry')}</Text>
+</TouchableOpacity>
+
+<TouchableOpacity
+    style={[styles.retryButton, { backgroundColor: '#1a6b3c' }]}
+    onPress={() => router.push('/learn')}>
+    <Text style={[styles.retryText, { color: '#fff' }]}>
+      {t('land.learnHow')} {result.crop}
+    </Text>
+  </TouchableOpacity>
+
+  <TouchableOpacity
+    style={[styles.retryButton, { backgroundColor: '#f5a623' }]}
+    onPress={async () => {
+      await saveCropToProfile(result);
+      Alert.alert(
+        '🌱 Crop Started!',
+        `You have started growing ${result.crop}. Your progress will be tracked on the home screen.`,
+        [{ text: 'Go to Home', onPress: () => router.replace('/(tabs)') }]
+      );
+    }}>
+    <Text style={[styles.retryText, { color: '#fff' }]}>
+      🚀 Start Growing {result.crop}
+    </Text>
+  </TouchableOpacity>
         </ScrollView>
       </SafeAreaView>
     );
@@ -96,7 +125,24 @@ export default function LandScreen() {
     </SafeAreaView>
   );
 }
-
+const saveCropToProfile = async (result: Result) => {
+  try {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+    await supabase
+      .from('profiles')
+      .update({
+        saved_crop:       result.crop,
+        crop_start_date:  new Date().toISOString(),
+        crop_cycle_days:  result.cycleDays,
+        crop_profit_max:  result.profitMax,
+        crop_investment:  result.investment,
+      })
+      .eq('id', user.id);
+  } catch (e) {
+    console.log('Save crop error:', e);
+  }
+};
 const styles = StyleSheet.create({
   container:     { flex: 1, backgroundColor: '#f5f7f5' },
   backButton:    { padding: 16, paddingTop: 52 },
