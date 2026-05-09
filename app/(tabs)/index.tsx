@@ -1,5 +1,5 @@
-import { useFocusEffect, useRouter } from 'expo-router';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useRouter } from 'expo-router';
+import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   ActivityIndicator, Animated, Dimensions, ScrollView,
@@ -7,6 +7,7 @@ import {
 } from 'react-native';
 import i18n, { changeLanguage } from '../../lib/i18n';
 import { supabase } from '../../lib/supabase';
+import { fetchWeather, WeatherData } from '../../lib/weather';
 
 const { width } = Dimensions.get('window');
 const CARD_SIZE = (width - 52) / 2;
@@ -23,10 +24,7 @@ const CARDS = [
   { key: 'plan',       color: '#bf360c', bg: '#fbe9e7', emoji: '📋', route: '/plan',       span: true  },
 ];
 
-const WEATHER = {
-  temp: 24, condition: 'Partly Cloudy', icon: '⛅',
-  humidity: 68, wind: 12, advice: 'Good day for spraying',
-};
+
 
 function getGreeting() {
   const h = new Date().getHours();
@@ -105,6 +103,9 @@ export default function HomeScreen() {
   const [estEarning, setEstEarning]     = useState('₹0');
   const [loading, setLoading]           = useState(true);
 
+  const [weather, setWeather] = useState<WeatherData | null>(null);
+  const [weatherLoading, setWeatherLoading] = useState(true);
+
   const loadFarmerData = async () => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
@@ -165,18 +166,17 @@ export default function HomeScreen() {
 
   // Animate header on mount
   useEffect(() => {
-    Animated.parallel([
-      Animated.timing(headerFade,  { toValue: 1, duration: 700, useNativeDriver: true }),
-      Animated.timing(headerSlide, { toValue: 0, duration: 700, useNativeDriver: true }),
-    ]).start();
-  }, []);
+  Animated.parallel([
+    Animated.timing(headerFade,  { toValue: 1, duration: 700, useNativeDriver: true }),
+    Animated.timing(headerSlide, { toValue: 0, duration: 700, useNativeDriver: true }),
+  ]).start();
 
-  // Reload every time screen comes into focus
-  useFocusEffect(
-    useCallback(() => {
-      loadFarmerData();
-    }, [])
-  );
+  // Load real weather
+  fetchWeather().then(data => {
+    setWeather(data);
+    setWeatherLoading(false);
+  });
+}, []);
 
   const toggleLang = () => changeLanguage(i18n.language === 'en' ? 'hi' : 'en');
 
@@ -226,17 +226,37 @@ export default function HomeScreen() {
           <Text style={styles.greetingArt}>🌾</Text>
         </View>
 
-        {/* Weather */}
+       {/* Weather */}
         <View style={styles.weatherCard}>
-          <Text style={styles.weatherIcon}>{WEATHER.icon}</Text>
-          <View style={styles.weatherMiddle}>
-            <Text style={styles.weatherTemp}>{WEATHER.temp}°C · {WEATHER.condition}</Text>
-            <Text style={styles.weatherDetails}>
-              💧 {WEATHER.humidity}%  💨 {WEATHER.wind} km/h · {WEATHER.advice}
-            </Text>
-          </View>
+          {weatherLoading ? (
+            <ActivityIndicator color="#fff" size="small" />
+          ) : weather ? (
+            <>
+              <Text style={styles.weatherIcon}>{weather.icon}</Text>
+              <View style={styles.weatherMiddle}>
+                <Text style={styles.weatherTemp}>
+                  {weather.temp}°C · {weather.condition}
+                </Text>
+                <Text style={styles.weatherDetails}>
+                  💧 {weather.humidity}%  💨 {weather.wind} km/h · {weather.advice}
+                </Text>
+              </View>
+              <View style={styles.weatherRight}>
+                <Text style={styles.weatherCity}>{weather.city}</Text>
+                <Text style={styles.weatherFeels}>Feels {weather.feelsLike}°C</Text>
+              </View>
+            </>
+          ) : (
+            <>
+              <Text style={styles.weatherIcon}>🌡️</Text>
+              <View style={styles.weatherMiddle}>
+                <Text style={styles.weatherTemp}>Weather unavailable</Text>
+                <Text style={styles.weatherDetails}>Enable location for weather updates</Text>
+              </View>
+            </>
+          )}
         </View>
-      </Animated.View>
+      </Animated.View> {/* ← ADD THIS LINE */}
 
       {/* ── Stats Row ── */}
       <View style={styles.statsRow}>
@@ -307,8 +327,8 @@ export default function HomeScreen() {
         ))}
       </View>
     </ScrollView>
-  );
-}
+    );
+}    
 
 const styles = StyleSheet.create({
   container:       { flex: 1, backgroundColor: '#f0f4f0' },
@@ -334,6 +354,9 @@ const styles = StyleSheet.create({
   weatherMiddle:   { flex: 1 },
   weatherTemp:     { fontSize: 14, fontWeight: '700', color: '#fff', marginBottom: 3 },
   weatherDetails:  { fontSize: 11, color: 'rgba(255,255,255,0.75)' },
+  weatherRight:    { alignItems: 'flex-end' },
+  weatherCity:     { fontSize: 12, color: '#fff', fontWeight: '700', marginBottom: 2 },
+  weatherFeels:    { fontSize: 10, color: 'rgba(255,255,255,0.7)' },
   statsRow:        { flexDirection: 'row', gap: 10, marginHorizontal: 16, marginTop: -18, marginBottom: 14 },
   statCard:        { flex: 1, backgroundColor: '#fff', borderRadius: 18, padding: 14, alignItems: 'center', elevation: 5, shadowColor: '#000', shadowOffset: { width: 0, height: 3 }, shadowOpacity: 0.1, shadowRadius: 8 },
   statEmoji:       { fontSize: 22, marginBottom: 5 },
