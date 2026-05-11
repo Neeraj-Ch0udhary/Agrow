@@ -191,7 +191,7 @@ export default function HomeScreen() {
     <ScrollView
       style={styles.container}
       showsVerticalScrollIndicator={false}
-      contentContainerStyle={{ paddingBottom: 32 }}>
+      contentContainerStyle={{ paddingBottom: 140 }}>
       <StatusBar barStyle="light-content" backgroundColor="#1a6b3c" />
 
       {/* ── Header ── */}
@@ -256,7 +256,7 @@ export default function HomeScreen() {
             </>
           )}
         </View>
-      </Animated.View> {/* ← ADD THIS LINE */}
+      </Animated.View>
 
       {/* ── Stats Row ── */}
       <View style={styles.statsRow}>

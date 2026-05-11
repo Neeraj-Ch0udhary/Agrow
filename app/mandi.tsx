@@ -1,160 +1,230 @@
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { RefreshControl, SafeAreaView, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import {
+  Linking,
+  RefreshControl,
+  SafeAreaView,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View
+} from 'react-native';
 
-type CropPrice = { name: string; emoji: string; category: string; price: number; unit: string; change: number; min: number; max: number; market: string; state: string; };
+type CropPrice = {
+  name: string;
+  emoji: string;
+  category: string;
+  price: number;
+  unit: string;
+  change: number;
+  min: number;
+  max: number;
+  market: string;
+  state: string;
+};
 
 const MANDI_DATA: CropPrice[] = [
   { name: 'Oyster Mushroom', emoji: '🍄', category: 'Modern', price: 140, unit: 'kg', change: 12, min: 120, max: 160, market: 'Azadpur Mandi', state: 'Delhi' },
-  { name: 'Button Mushroom', emoji: '🍄', category: 'Modern', price: 95, unit: 'kg', change: -5, min: 80, max: 110, market: 'Vashi APMC', state: 'Maharashtra' },
-  { name: 'Microgreens', emoji: '🌿', category: 'Modern', price: 280, unit: 'kg', change: 25, min: 250, max: 320, market: 'Azadpur Mandi', state: 'Delhi' },
-  { name: 'Broccoli', emoji: '🥦', category: 'Exotic', price: 65, unit: 'kg', change: -8, min: 55, max: 80, market: 'Bengaluru APMC', state: 'Karnataka' },
-  { name: 'Colored Capsicum', emoji: '🫑', category: 'Exotic', price: 85, unit: 'kg', change: 15, min: 70, max: 100, market: 'Pune APMC', state: 'Maharashtra' },
-  { name: 'Cherry Tomato', emoji: '🍅', category: 'Exotic', price: 120, unit: 'kg', change: 20, min: 100, max: 140, market: 'Azadpur Mandi', state: 'Delhi' },
-  { name: 'Stevia', emoji: '🌱', category: 'Medicinal', price: 180, unit: 'kg', change: 8, min: 160, max: 200, market: 'Indore Mandi', state: 'MP' },
-  { name: 'Ashwagandha', emoji: '🌿', category: 'Medicinal', price: 220, unit: 'kg', change: 18, min: 190, max: 250, market: 'Neemuch Mandi', state: 'MP' },
-  { name: 'Lemongrass', emoji: '🌾', category: 'Medicinal', price: 35, unit: 'kg', change: -3, min: 28, max: 42, market: 'Kannauj Mandi', state: 'UP' },
   { name: 'Wheat', emoji: '🌾', category: 'Traditional', price: 22, unit: 'kg', change: 1, min: 20, max: 24, market: 'Hapur Mandi', state: 'UP' },
   { name: 'Rice', emoji: '🍚', category: 'Traditional', price: 28, unit: 'kg', change: -2, min: 25, max: 32, market: 'Karnal Mandi', state: 'Haryana' },
-  { name: 'Mustard', emoji: '🌼', category: 'Traditional', price: 55, unit: 'kg', change: 3, min: 50, max: 60, market: 'Alwar Mandi', state: 'Rajasthan' },
 ];
 
-const CATEGORIES = ['All', 'Modern', 'Exotic', 'Medicinal', 'Traditional'];
+const MOCK_MARKET = [
+  { crop: 'Wheat', price: 24, quantity: '50 quintal', location: 'UP', phone: '9876543210' },
+  { crop: 'Rice', price: 30, quantity: '30 quintal', location: 'Punjab', phone: '9123456780' },
+  { crop: 'Mushroom', price: 120, quantity: '100 kg', location: 'Delhi', phone: '9988776655' },
+];
+
+const CATEGORIES = ['All', 'Modern', 'Traditional'];
 
 export default function MandiScreen() {
   const router = useRouter();
   const { t } = useTranslation();
-  const [filter, setFilter]         = useState('All');
-  const [search, setSearch]         = useState('');
+
+  const [mode, setMode] = useState<'prices' | 'market'>('prices');
+  const [filter, setFilter] = useState('All');
+  const [search, setSearch] = useState('');
   const [refreshing, setRefreshing] = useState(false);
-  const [lastUpdated, setLastUpdated] = useState(new Date());
-  const [prices, setPrices]         = useState(MANDI_DATA);
+  const [prices, setPrices] = useState(MANDI_DATA);
 
   const onRefresh = () => {
     setRefreshing(true);
     setTimeout(() => {
-      setPrices(prev => prev.map(crop => ({ ...crop, price: crop.price + Math.floor(Math.random() * 6) - 3, change: Math.floor(Math.random() * 30) - 10 })));
-      setLastUpdated(new Date());
       setRefreshing(false);
-    }, 1500);
+    }, 1000);
   };
 
   const filtered = prices.filter(crop => {
     const matchCategory = filter === 'All' || crop.category === filter;
-    const matchSearch = crop.name.toLowerCase().includes(search.toLowerCase()) || crop.state.toLowerCase().includes(search.toLowerCase());
+    const matchSearch =
+      crop.name.toLowerCase().includes(search.toLowerCase()) ||
+      crop.state.toLowerCase().includes(search.toLowerCase());
     return matchCategory && matchSearch;
   });
 
-  const topGainer = [...prices].sort((a, b) => b.change - a.change)[0];
-  const topLoser  = [...prices].sort((a, b) => a.change - b.change)[0];
-
   return (
     <SafeAreaView style={styles.container}>
+      
       <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
-        <Text style={styles.backText}>{t('common.back')}</Text>
+        <Text style={styles.backText}>← Back</Text>
       </TouchableOpacity>
-      <ScrollView showsVerticalScrollIndicator={false} refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={['#1a6b3c']} />}>
+
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
+      >
+        {/* Header */}
         <View style={styles.header}>
-          <View>
-            <Text style={styles.headerTitle}>{t('mandi.title')}</Text>
-            <Text style={styles.headerSub}>{t('mandi.subtitle')}</Text>
-          </View>
-          <View style={styles.updatedBadge}>
-            <Text style={styles.updatedText}>🕐 {lastUpdated.getHours()}:{String(lastUpdated.getMinutes()).padStart(2, '0')}</Text>
-          </View>
+          <Text style={styles.headerTitle}>Mandi & Market</Text>
+          <Text style={styles.headerSub}>Live prices + direct selling</Text>
         </View>
 
-        <View style={styles.moversRow}>
-          <View style={[styles.moverCard, { borderLeftColor: '#4caf50' }]}>
-            <Text style={styles.moverLabel}>{t('mandi.topGainer')}</Text>
-            <Text style={styles.moverName}>{topGainer.emoji} {topGainer.name}</Text>
-            <Text style={styles.moverGain}>+₹{topGainer.change}/kg</Text>
-          </View>
-          <View style={[styles.moverCard, { borderLeftColor: '#e53935' }]}>
-            <Text style={styles.moverLabel}>{t('mandi.topLoser')}</Text>
-            <Text style={styles.moverName}>{topLoser.emoji} {topLoser.name}</Text>
-            <Text style={styles.moverLoss}>₹{topLoser.change}/kg</Text>
-          </View>
+        {/* Toggle */}
+        <View style={styles.toggleRow}>
+          <TouchableOpacity
+            style={[styles.toggleBtn, mode === 'prices' && styles.activeToggle]}
+            onPress={() => setMode('prices')}>
+            <Text style={mode === 'prices' ? styles.activeText : styles.inactiveText}>
+              📊 Prices
+            </Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={[styles.toggleBtn, mode === 'market' && styles.activeToggle]}
+            onPress={() => setMode('market')}>
+            <Text style={mode === 'market' ? styles.activeText : styles.inactiveText}>
+              🛒 Market
+            </Text>
+          </TouchableOpacity>
         </View>
 
+        {/* Search */}
         <View style={styles.searchBox}>
-          <Text style={styles.searchIcon}>🔍</Text>
-          <TextInput style={styles.searchInput} placeholder={t('mandi.search')} placeholderTextColor="#aaa" value={search} onChangeText={setSearch} />
+          <TextInput
+            placeholder="Search..."
+            value={search}
+            onChangeText={setSearch}
+            style={styles.searchInput}
+          />
         </View>
 
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.filterRow}>
+        {/* Filter */}
+        <ScrollView horizontal showsHorizontalScrollIndicator={false}>
           {CATEGORIES.map(cat => (
-            <TouchableOpacity key={cat} style={[styles.filterChip, filter === cat && styles.filterChipActive]} onPress={() => setFilter(cat)}>
-              <Text style={[styles.filterChipText, filter === cat && styles.filterChipTextActive]}>{cat}</Text>
+            <TouchableOpacity
+              key={cat}
+              style={[styles.filterChip, filter === cat && styles.activeChip]}
+              onPress={() => setFilter(cat)}>
+              <Text style={{ color: filter === cat ? '#fff' : '#555' }}>{cat}</Text>
             </TouchableOpacity>
           ))}
         </ScrollView>
 
-        <View style={styles.priceList}>
-          {filtered.map((crop, i) => (
-            <View key={i} style={styles.priceCard}>
-              <View style={styles.priceLeft}>
-                <Text style={styles.cropEmoji}>{crop.emoji}</Text>
-                <View>
-                  <Text style={styles.cropName}>{crop.name}</Text>
-                  <Text style={styles.cropMarket}>📍 {crop.market}, {crop.state}</Text>
-                </View>
+        {/* CONTENT SWITCH */}
+        {mode === 'prices' ? (
+          <View style={{ padding: 16 }}>
+            {filtered.map((item, i) => (
+              <View key={i} style={styles.card}>
+                <Text style={styles.cropName}>{item.emoji} {item.name}</Text>
+                <Text style={styles.price}>₹{item.price}/{item.unit}</Text>
+                <Text style={styles.location}>{item.market}, {item.state}</Text>
               </View>
-              <View style={styles.priceRight}>
-                <Text style={styles.cropPrice}>₹{crop.price}/{crop.unit}</Text>
-                <View style={[styles.changeBadge, { backgroundColor: crop.change >= 0 ? '#e8f5e9' : '#ffebee' }]}>
-                  <Text style={[styles.changeText, { color: crop.change >= 0 ? '#2e7d32' : '#e53935' }]}>
-                    {crop.change >= 0 ? '▲' : '▼'} ₹{Math.abs(crop.change)}
-                  </Text>
-                </View>
-              </View>
-            </View>
-          ))}
-        </View>
+            ))}
+          </View>
+        ) : (
+          <View style={{ padding: 16 }}>
+            {MOCK_MARKET.map((item, i) => (
+              <View key={i} style={styles.card}>
+                <Text style={styles.cropName}>🌾 {item.crop}</Text>
+                <Text>Qty: {item.quantity}</Text>
+                <Text>{item.location}</Text>
 
-        <View style={styles.noteCard}>
-          <Text style={styles.noteText}>{t('mandi.note')}</Text>
-        </View>
-        <View style={{ height: 40 }} />
+                <View style={{ marginTop: 6 }}>
+                  <Text style={styles.price}>₹{item.price}/kg</Text>
+
+                  <TouchableOpacity
+                    style={styles.callBtn}
+                    onPress={() => Linking.openURL(`tel:${item.phone}`)}>
+                    <Text style={{ color: '#fff' }}>Call Seller</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            ))}
+          </View>
+        )}
+
+        <View style={{ height: 100 }} />
       </ScrollView>
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  container:            { flex: 1, backgroundColor: '#f5f7f5' },
-  backButton:           { padding: 16, paddingTop: 52 },
-  backText:             { fontSize: 16, color: '#1a6b3c', fontWeight: '600' },
-  header:               { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 16, marginBottom: 16 },
-  headerTitle:          { fontSize: 24, fontWeight: '700', color: '#1a1a1a' },
-  headerSub:            { fontSize: 12, color: '#888', marginTop: 2 },
-  updatedBadge:         { backgroundColor: '#e8f5e9', paddingHorizontal: 10, paddingVertical: 6, borderRadius: 20 },
-  updatedText:          { fontSize: 12, color: '#2e7d32', fontWeight: '500' },
-  moversRow:            { flexDirection: 'row', gap: 12, paddingHorizontal: 16, marginBottom: 16 },
-  moverCard:            { flex: 1, backgroundColor: '#fff', borderRadius: 12, padding: 14, borderLeftWidth: 4, elevation: 2 },
-  moverLabel:           { fontSize: 11, color: '#888', marginBottom: 6 },
-  moverName:            { fontSize: 13, fontWeight: '600', color: '#1a1a1a', marginBottom: 4 },
-  moverGain:            { fontSize: 14, fontWeight: '700', color: '#2e7d32' },
-  moverLoss:            { fontSize: 14, fontWeight: '700', color: '#e53935' },
-  searchBox:            { flexDirection: 'row', alignItems: 'center', backgroundColor: '#fff', marginHorizontal: 16, borderRadius: 12, paddingHorizontal: 14, marginBottom: 12, elevation: 2 },
-  searchIcon:           { fontSize: 16, marginRight: 8 },
-  searchInput:          { flex: 1, fontSize: 14, color: '#1a1a1a', paddingVertical: 12 },
-  filterRow:            { paddingHorizontal: 16, marginBottom: 16 },
-  filterChip:           { paddingHorizontal: 16, paddingVertical: 8, borderRadius: 20, backgroundColor: '#fff', marginRight: 8, elevation: 1 },
-  filterChipActive:     { backgroundColor: '#1a6b3c' },
-  filterChipText:       { fontSize: 13, color: '#888', fontWeight: '500' },
-  filterChipTextActive: { color: '#fff' },
-  priceList:            { paddingHorizontal: 16 },
-  priceCard:            { backgroundColor: '#fff', borderRadius: 12, padding: 16, marginBottom: 10, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', elevation: 2 },
-  priceLeft:            { flexDirection: 'row', alignItems: 'center', gap: 12, flex: 1 },
-  cropEmoji:            { fontSize: 28 },
-  cropName:             { fontSize: 14, fontWeight: '600', color: '#1a1a1a', marginBottom: 3 },
-  cropMarket:           { fontSize: 11, color: '#888' },
-  priceRight:           { alignItems: 'flex-end' },
-  cropPrice:            { fontSize: 16, fontWeight: '700', color: '#1a1a1a', marginBottom: 4 },
-  changeBadge:          { paddingHorizontal: 8, paddingVertical: 3, borderRadius: 10 },
-  changeText:           { fontSize: 12, fontWeight: '600' },
-  noteCard:             { backgroundColor: '#fff8e1', marginHorizontal: 16, borderRadius: 12, padding: 14, marginTop: 8 },
-  noteText:             { fontSize: 12, color: '#f57f17', lineHeight: 18 },
+  container: { flex: 1, backgroundColor: '#f5f7f5' },
+
+  backButton: { padding: 16 },
+  backText: { fontSize: 16, color: '#1a6b3c' },
+
+  header: { paddingHorizontal: 16, marginBottom: 12 },
+  headerTitle: { fontSize: 22, fontWeight: '700' },
+  headerSub: { fontSize: 12, color: '#777' },
+
+  toggleRow: {
+    flexDirection: 'row',
+    margin: 16,
+    backgroundColor: '#fff',
+    borderRadius: 10,
+    padding: 4,
+  },
+
+  toggleBtn: { flex: 1, padding: 10, alignItems: 'center' },
+  activeToggle: { backgroundColor: '#1a6b3c', borderRadius: 8 },
+
+  activeText: { color: '#fff', fontWeight: '700' },
+  inactiveText: { color: '#555' },
+
+  searchBox: {
+    marginHorizontal: 16,
+    backgroundColor: '#fff',
+    borderRadius: 10,
+    padding: 10,
+    marginBottom: 10,
+  },
+
+  searchInput: { fontSize: 14 },
+
+  filterChip: {
+    padding: 10,
+    backgroundColor: '#eee',
+    borderRadius: 20,
+    marginHorizontal: 6,
+  },
+
+  activeChip: {
+    backgroundColor: '#1a6b3c',
+  },
+
+  card: {
+    backgroundColor: '#fff',
+    padding: 14,
+    borderRadius: 10,
+    marginBottom: 10,
+  },
+
+  cropName: { fontSize: 16, fontWeight: '600' },
+  price: { fontSize: 15, fontWeight: '700', marginTop: 4 },
+  location: { fontSize: 12, color: '#777' },
+
+  callBtn: {
+    marginTop: 6,
+    backgroundColor: '#1a6b3c',
+    padding: 8,
+    borderRadius: 6,
+    alignItems: 'center',
+  },
 });
