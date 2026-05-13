@@ -1,5 +1,5 @@
-import { useRouter } from 'expo-router';
-import { useEffect, useRef, useState } from 'react';
+import { useFocusEffect, useRouter } from 'expo-router';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   ActivityIndicator, Animated, Dimensions, ScrollView,
@@ -23,8 +23,6 @@ const CARDS = [
   { key: 'disease',    color: '#b71c1c', bg: '#ffebee', emoji: '🔍', route: '/disease',    span: false },
   { key: 'plan',       color: '#bf360c', bg: '#fbe9e7', emoji: '📋', route: '/plan',       span: true  },
 ];
-
-
 
 function getGreeting() {
   const h = new Date().getHours();
@@ -91,10 +89,10 @@ function GridCard({ item, index, t, router }: any) {
 }
 
 export default function HomeScreen() {
-  const router       = useRouter();
-  const { t }        = useTranslation();
-  const headerFade   = useRef(new Animated.Value(0)).current;
-  const headerSlide  = useRef(new Animated.Value(-16)).current;
+  const router      = useRouter();
+  const { t }       = useTranslation();
+  const headerFade  = useRef(new Animated.Value(0)).current;
+  const headerSlide = useRef(new Animated.Value(-16)).current;
 
   const [farmerName, setFarmerName]     = useState('Kisan');
   const [savedCrop, setSavedCrop]       = useState<string | null>(null);
@@ -103,34 +101,67 @@ export default function HomeScreen() {
   const [estEarning, setEstEarning]     = useState('₹0');
   const [loading, setLoading]           = useState(true);
 
-  const [weather, setWeather] = useState<WeatherData | null>(null);
+  const [weather, setWeather]               = useState<WeatherData | null>(null);
   const [weatherLoading, setWeatherLoading] = useState(true);
 
   const loadFarmerData = async () => {
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) { setLoading(false); return; }
+    console.log('🔍 loadFarmerData started');
 
-      const { data } = await supabase
+    // Hard timeout — never stuck loading more than 6 seconds
+    const timeout = setTimeout(() => {
+      console.log('⏰ TIMEOUT hit — forcing loading false');
+      setLoading(false);
+    }, 6000);
+
+    try {
+      console.log('📡 Calling supabase.auth.getUser...');
+      const { data: { user }, error: authError } = await supabase.auth.getUser();
+
+      if (authError) {
+        console.log('❌ Auth error:', authError.message);
+        clearTimeout(timeout);
+        setLoading(false);
+        return;
+      }
+
+      console.log('👤 User:', user?.id ?? 'NOT LOGGED IN');
+
+      if (!user) {
+        clearTimeout(timeout);
+        setLoading(false);
+        return;
+      }
+
+      console.log('📦 Fetching profile from Supabase...');
+      const { data, error: profileError } = await supabase
         .from('profiles')
         .select('*')
         .eq('id', user.id)
         .maybeSingle();
 
-      if (!data) {
-        await supabase.from('profiles').upsert({
-          id: user.id, full_name: '', phone: '', state: '',
-        });
+      if (profileError) {
+        console.log('❌ Profile error:', profileError.message);
+        clearTimeout(timeout);
         setLoading(false);
         return;
       }
 
-      // Set name
+      console.log('✅ Profile data:', JSON.stringify(data));
+
+      if (!data) {
+        console.log('⚠️ No profile found — creating one');
+        await supabase.from('profiles').upsert({
+          id: user.id, full_name: '', phone: '', state: '',
+        });
+        clearTimeout(timeout);
+        setLoading(false);
+        return;
+      }
+
       if (data.full_name?.trim()) {
         setFarmerName(data.full_name.trim().split(' ')[0]);
       }
 
-      // Set crop and progress
       if (data.saved_crop?.trim()) {
         setSavedCrop(data.saved_crop);
 
@@ -151,32 +182,41 @@ export default function HomeScreen() {
           }
         }
       } else {
-        // Reset if no crop
         setSavedCrop(null);
         setCropProgress(0);
         setDaysLeft(0);
         setEstEarning('₹0');
       }
+
+      console.log('🎉 loadFarmerData complete');
     } catch (e: any) {
-      console.log('Home load error:', e?.message);
+      console.log('💥 Unexpected error:', e?.message);
     } finally {
+      clearTimeout(timeout);
       setLoading(false);
+      console.log('🏁 setLoading(false) called');
     }
   };
 
-  // Animate header on mount
-  useEffect(() => {
-  Animated.parallel([
-    Animated.timing(headerFade,  { toValue: 1, duration: 700, useNativeDriver: true }),
-    Animated.timing(headerSlide, { toValue: 0, duration: 700, useNativeDriver: true }),
-  ]).start();
+  // Reload data every time screen comes into focus
+  useFocusEffect(
+    useCallback(() => {
+      setLoading(true);
+      loadFarmerData();
+    }, [])
+  );
 
-  // Load real weather
-  fetchWeather().then(data => {
-    setWeather(data);
-    setWeatherLoading(false);
-  });
-}, []);
+  useEffect(() => {
+    Animated.parallel([
+      Animated.timing(headerFade,  { toValue: 1, duration: 700, useNativeDriver: true }),
+      Animated.timing(headerSlide, { toValue: 0, duration: 700, useNativeDriver: true }),
+    ]).start();
+
+    fetchWeather().then(data => {
+      setWeather(data);
+      setWeatherLoading(false);
+    }).catch(() => setWeatherLoading(false));
+  }, []);
 
   const toggleLang = () => changeLanguage(i18n.language === 'en' ? 'hi' : 'en');
 
@@ -226,7 +266,7 @@ export default function HomeScreen() {
           <Text style={styles.greetingArt}>🌾</Text>
         </View>
 
-       {/* Weather */}
+        {/* Weather */}
         <View style={styles.weatherCard}>
           {weatherLoading ? (
             <ActivityIndicator color="#fff" size="small" />
@@ -327,8 +367,8 @@ export default function HomeScreen() {
         ))}
       </View>
     </ScrollView>
-    );
-}    
+  );
+}
 
 const styles = StyleSheet.create({
   container:       { flex: 1, backgroundColor: '#f0f4f0' },

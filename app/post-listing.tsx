@@ -1,14 +1,14 @@
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import {
-    ActivityIndicator,
-    Alert,
-    SafeAreaView, ScrollView,
-    StyleSheet,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View
+  ActivityIndicator,
+  Alert,
+  SafeAreaView, ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View
 } from 'react-native';
 import { supabase } from '../lib/supabase';
 
@@ -21,7 +21,6 @@ const CROPS = [
 
 export default function PostListingScreen() {
   const router = useRouter();
-
   const [crop, setCrop]           = useState('');
   const [quantity, setQuantity]   = useState('');
   const [price, setPrice]         = useState('');
