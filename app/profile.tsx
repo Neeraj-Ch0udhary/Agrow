@@ -88,6 +88,12 @@ export default function ProfileScreen() {
       setSaving(false);
     }
   };
+  <><TouchableOpacity style={styles.logoutBtn} onPress={handleLogout}>
+  </TouchableOpacity><TouchableOpacity style={styles.settingsBtn} onPress={() => router.push('/settings')}>
+      <Text style={styles.settingsEmoji}>⚙️</Text>
+      <Text style={styles.settingsText}>Settings</Text>
+      <Text style={styles.settingsArrow}>›</Text>
+    </TouchableOpacity></>
 
   const handleLogout = async () => {
     Alert.alert(t('profile.logout'), t('profile.logoutConfirm'), [
@@ -314,5 +320,9 @@ const styles = StyleSheet.create({
   logoutBtn:         { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, marginHorizontal: 16, backgroundColor: '#fff', padding: 16, borderRadius: 16, marginBottom: 16, borderWidth: 1.5, borderColor: '#ffcdd2', elevation: 1 },
   logoutEmoji:       { fontSize: 18 },
   logoutText:        { fontSize: 15, color: '#e53935', fontWeight: '700' },
-  versionText:       { textAlign: 'center', fontSize: 11, color: '#bbb', marginBottom: 8 },
+  settingsBtn:   { flexDirection: 'row', alignItems: 'center', marginHorizontal: 16, backgroundColor: '#fff', padding: 16, borderRadius: 16, marginBottom: 12, elevation: 1, gap: 8 },
+settingsEmoji: { fontSize: 18 },
+settingsText:  { flex: 1, fontSize: 15, color: '#1a1a1a', fontWeight: '600' },
+settingsArrow: { fontSize: 20, color: '#ccc' },
+versionText:       { textAlign: 'center', fontSize: 11, color: '#bbb', marginBottom: 8 },
 });

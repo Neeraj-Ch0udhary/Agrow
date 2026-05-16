@@ -27,13 +27,14 @@ export default function ProfileTabScreen() {
   const initials = name ? name.split(' ').map((n: string) => n[0]).join('').toUpperCase().slice(0, 2) : '🌿';
 
   const MENU_ITEMS = [
-    { emoji: '👤', label: 'Edit Profile', route: '/profile', color: '#1a6b3c' },
-    { emoji: '🌍', label: 'Land Assessment', route: '/land', color: '#1a6b3c' },
-    { emoji: '📚', label: 'Crop Guides', route: '/learn', color: '#e65100' },
-    { emoji: '🤖', label: 'Agrow AI', route: '/chat', color: '#4a148c' },
-    { emoji: '🔍', label: 'Disease Detector', route: '/disease', color: '#b71c1c' },
-    { emoji: '📋', label: 'Farming Plan', route: '/plan', color: '#bf360c' },
-  ];
+  { emoji: '👤', label: 'Edit Profile',      route: '/profile',  color: '#1a6b3c' },
+  { emoji: '🌍', label: 'Land Assessment',   route: '/land',     color: '#1a6b3c' },
+  { emoji: '📚', label: 'Crop Guides',       route: '/learn',    color: '#e65100' },
+  { emoji: '🤖', label: 'Agrow AI',          route: '/chat',     color: '#4a148c' },
+  { emoji: '🔍', label: 'Disease Detector',  route: '/disease',  color: '#b71c1c' },
+  { emoji: '📋', label: 'Farming Plan',      route: '/plan',     color: '#bf360c' },
+  { emoji: '⚙️', label: 'Settings',          route: '/settings', color: '#455a64' },
+];
 
   return (
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
@@ -77,6 +78,7 @@ export default function ProfileTabScreen() {
     </ScrollView>
   );
 }
+
 
 const styles = StyleSheet.create({
   container:    { flex: 1, backgroundColor: '#f0f4f0' },

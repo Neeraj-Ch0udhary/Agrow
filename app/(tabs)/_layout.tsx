@@ -62,7 +62,7 @@ export default function TabLayout() {
 }
 
 const styles = StyleSheet.create({
-  tabBar:   { backgroundColor: '#fff', borderTopWidth: 0, elevation: 20, shadowColor: '#000', shadowOffset: { width: 0, height: -4 }, shadowOpacity: 0.08, shadowRadius: 12, height: 72, paddingBottom: 8, paddingTop: 6, borderTopLeftRadius: 22, borderTopRightRadius: 22, position: 'absolute' },
+  tabBar:   { backgroundColor: '#fff', borderTopWidth: 0, elevation: 20, shadowColor: '#000', shadowOffset: { width: 0, height: -4 }, shadowOpacity: 0.08, shadowRadius: 12, height: 72, paddingBottom: 8, paddingTop: 6, borderTopLeftRadius: 22, borderTopRightRadius: 22, position: 'absolute' as const },
   tabItem:  { alignItems: 'center', justifyContent: 'center', width: 70 },
   tabEmoji: { fontSize: 22, marginBottom: 3 },
   tabLabel: { fontSize: 10, fontWeight: '600' },
