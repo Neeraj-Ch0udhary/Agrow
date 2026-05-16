@@ -25,7 +25,8 @@
       "calculator": { "title": "Profit Calculator", "desc": "See exactly how much you can earn" },
       "chat": { "title": "Agrow AI", "desc": "Ask anything about farming — instant answers" },
       "disease": { "title": "Disease Detector", "desc": "Take a photo → AI diagnoses your plant" },
-      "plan": { "title": "Farming Plan", "desc": "AI generates your complete farming plan" }
+      "plan": { "title": "Farming Plan", "desc": "AI generates your complete farming plan" },
+      "checklist": { "title": "Daily Checklist", "desc": "Today's farming tasks" }
     }
   },
   "onboarding": {
@@ -207,5 +208,17 @@
     "income": "Est. Income",
     "logout": "🚪 Logout",
     "logoutConfirm": "Are you sure you want to logout?"
+  },
+  "settings": {
+    "title": "⚙️ Settings",
+    "subtitle": "Manage your account and preferences",
+    "language": "Language",
+    "selectLanguage": "Select your preferred language",
+    "darkMode": "Dark Mode",
+    "enableDarkMode": "Enable dark mode for better night-time farming support",
+    "notifications": "Notifications",
+    "manageNotifications": "Manage your notification preferences",
+    "account": "Account",
+    "deleteAccount": "Delete my account (this action cannot be undone)"
   }
 }
