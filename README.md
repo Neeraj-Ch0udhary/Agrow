@@ -240,7 +240,7 @@ This project is licensed under the MIT License — see the [LICENSE](LICENSE) fi
 
 **Neeraj Choudhary** — neeraj89303@gmail.com
 
-🌐 Live Website: [agrow-rosy.vercel.app](https://agrow-rosy.vercel.app)
+🌐 Live Website: [agrow-app.vercel.app](https://agrow-app.vercel.app)
 
 ---
 
