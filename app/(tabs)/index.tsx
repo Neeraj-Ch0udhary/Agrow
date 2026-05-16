@@ -23,7 +23,7 @@ const CARDS = [
   { key: 'calculator', color: '#f57f17', bg: '#fffde7', emoji: '💰', route: '/calculator', span: false },
   { key: 'chat',       color: '#4a148c', bg: '#f3e5f5', emoji: '🤖', route: '/chat',       span: false },
   { key: 'disease',    color: '#b71c1c', bg: '#ffebee', emoji: '🔍', route: '/disease',    span: false },
-  
+  { key: 'shops', color: '#00695c', bg: '#e0f2f1', emoji: '🏪', route: '/agri-shops', span: false },
   { key: 'plan',      color: '#bf360c', bg: '#fbe9e7', emoji: '📋', route: '/plan',      span: false },
 { key: 'checklist', color: '#1565c0', bg: '#e3f2fd', emoji: '✅', route: '/checklist', span: false },
 ];
