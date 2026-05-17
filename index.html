@@ -789,6 +789,32 @@ footer {
 .reveal-delay-3 { transition-delay: 0.3s; }
 .reveal-delay-4 { transition-delay: 0.4s; }
 
+/* ── SCREENSHOTS ── */
+.screenshots-section { background: #fff; }
+.screenshots-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 28px; margin-top: 56px;
+}
+.screenshot-item {
+  display: flex; flex-direction: column; align-items: center;
+  transition: transform 0.3s cubic-bezier(.16,1,.3,1);
+}
+.screenshot-item:hover { transform: translateY(-10px); }
+.screenshot-img {
+  width: 100%; border-radius: 28px;
+  box-shadow: 0 24px 60px rgba(0,0,0,0.16), 0 4px 12px rgba(0,0,0,0.08);
+  border: 5px solid #fff; outline: 1px solid rgba(0,0,0,0.06);
+  margin-bottom: 16px; transition: box-shadow 0.3s;
+}
+.screenshot-item:hover .screenshot-img {
+  box-shadow: 0 36px 80px rgba(0,0,0,0.22), 0 8px 20px rgba(0,0,0,0.1);
+}
+.screenshot-label { font-size: 13px; font-weight: 700; color: var(--ink); margin-bottom: 5px; text-align: center; }
+.screenshot-desc { font-size: 11px; color: var(--muted); text-align: center; line-height: 1.6; max-width: 160px; }
+@media (max-width: 960px) { .screenshots-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 540px) { .screenshots-grid { grid-template-columns: repeat(2, 1fr); gap: 14px; } }
+
 /* ── RESPONSIVE ── */
 @media (max-width: 960px) {
   .features-grid {
@@ -845,8 +871,14 @@ footer {
       Agrow is India's smartest agricultural platform — guiding farmers from crop selection to selling, with AI assistance, live market prices, and direct buyer connections.
     </p>
     <div class="hero-actions">
-      <a href="https://github.com/neerajchoudhary/agrow" class="btn-primary">
-        📱 View on GitHub
+  <a href="https://expo.dev/accounts/neeraj-ch0udhary/projects/Agrow/builds/011a71f9-0616-4504-9696-808f7e7f60c9" class="btn-primary" target="_blank">
+    📱 Download APK (Android)
+  </a>
+  <a href="https://github.com/Neeraj-Ch0udhary/Agrow" class="btn-secondary" target="_blank">
+    ⭐ View on GitHub
+  </a>
+</div>
+<p style="margin-top:18px;font-size:13px;color:var(--muted-light);">Free to download · No ads · Built for Indian farmers</p>
       </a>
       <a href="mailto:neeraj89303@gmail.com" class="btn-secondary">
         Partner with Us
@@ -1002,6 +1034,8 @@ footer {
     </div>
   </div>
 </section>
+
+<li><a href="#screenshots">Screenshots</a></li>
 
 <!-- CROPS -->
 <section class="section crops-section" id="crops">
