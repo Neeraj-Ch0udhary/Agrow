@@ -207,6 +207,11 @@ export default function HomeScreen() {
             <TouchableOpacity style={styles.langToggle} onPress={toggleLang}>
               <Text style={styles.langToggleText}>{i18n.language === 'en' ? 'हिं' : 'EN'}</Text>
             </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.profileBtn}
+              onPress={() => router.push('/notifications')}>
+              <Text style={styles.profileBtn}>🔔</Text>
+            </TouchableOpacity>
             <TouchableOpacity style={styles.profileBtn} onPress={() => router.push('/profile')}>
               <Text style={{ fontSize: scale(18) }}>👤</Text>
             </TouchableOpacity>

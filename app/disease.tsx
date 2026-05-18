@@ -6,8 +6,7 @@ import {
   SafeAreaView, ScrollView, StyleSheet, Text,
   TouchableOpacity, View
 } from 'react-native';
-
-const GROQ_API_KEY = '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';
+const GROQ_API_KEY = process.env.EXPO_PUBLIC_GROQ_API_KEY!;
 
 type ScanResult = {
   plant: string;

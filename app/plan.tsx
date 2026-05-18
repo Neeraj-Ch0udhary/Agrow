@@ -3,8 +3,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, SafeAreaView, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
-const GROQ_API_KEY = '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';
-
+const GROQ_API_KEY = process.env.EXPO_PUBLIC_GROQ_API_KEY!;
 type FarmerDetails = { landSize: string; budget: string; location: string; water: string; time: string; crop: string; goal: string; };
 
 async function generateFarmingPlan(details: FarmerDetails): Promise<string> {

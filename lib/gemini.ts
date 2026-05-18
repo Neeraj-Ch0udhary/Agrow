@@ -1,4 +1,4 @@
-const GROQ_API_KEY = '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';
+const GROQ_API_KEY = process.env.EXPO_PUBLIC_GROQ_API_KEY!;
 const GROQ_URL = 'https://api.groq.com/openai/v1/chat/completions';
 
 export async function askGemini(userMessage: string): Promise<string> {
