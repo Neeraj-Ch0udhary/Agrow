@@ -224,5 +224,17 @@
   "shops": {
   "title": "Agri Shops",
   "desc": "Find seeds & fertilizer near you"
+},
+  "notifications": {
+  "title": "Notifications",
+  "desc": "Crop alerts and daily reminders"
+},
+  "support": {
+  "title": "Support",
+  "desc": "We're here to help you grow"
+},
+  "about": {
+  "title": "About Agrow",
+  "desc": "Our mission and story"
 }
 }

@@ -25,7 +25,8 @@ const CARDS = [
   { key: 'disease',    color: '#b71c1c', bg: '#ffebee', emoji: '🔍', route: '/disease',    span: false },
   { key: 'shops', color: '#00695c', bg: '#e0f2f1', emoji: '🏪', route: '/agri-shops', span: false },
   { key: 'plan',      color: '#bf360c', bg: '#fbe9e7', emoji: '📋', route: '/plan',      span: false },
-{ key: 'checklist', color: '#1565c0', bg: '#e3f2fd', emoji: '✅', route: '/checklist', span: false },
+  { key: 'notifications', color: '#c62828', bg: '#ffebee', emoji: '🔔', route: '/notifications', span: false },
+  { key: 'checklist', color: '#1565c0', bg: '#e3f2fd', emoji: '✅', route: '/checklist', span: false },
 ];
 
 function getGreeting() {
