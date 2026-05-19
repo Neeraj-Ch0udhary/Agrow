@@ -222,43 +222,144 @@ export default function ChecklistScreen() {
       loadCropData();
     }, [])
   );
+  // ── AI task generation ─────────────────────────────────────────────────────
+async function generateDailyTasks(
+  cropName: string,
+  dayNumber: number,
+  totalDays: number
+): Promise<Task[]> {
+  const progress = Math.round((dayNumber / totalDays) * 100);
+ const phase =
+  progress <= 5  ? 'germination and planting — seeds/corms/saplings just planted' :
+  progress <= 20 ? 'early growth — establishing roots and first leaves' :
+  progress <= 50 ? 'active vegetative growth — main growing phase' :
+  progress <= 75 ? 'maturation — crop developing towards harvest' :
+  progress <= 90 ? 'pre-harvest — prepare buyers and packaging' :
+  'harvest — ready to cut and sell';
+  const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${GROQ_API_KEY}`,
+    },
+    body: JSON.stringify({
+      model: 'llama-3.3-70b-versatile',
+      messages: [
+        {
+          role: 'system',
+          content: `You are an expert Indian farming advisor. Generate daily farming tasks.
+You MUST respond with ONLY a valid JSON array. No explanation, no markdown backticks, no extra text before or after.
+Example format: [{"id":"t1","title":"Water plants","desc":"Water at base avoiding leaves.","emoji":"💧","category":"watering","priority":"high"},{"id":"t2","title":"Check for pests","desc":"Inspect leaves for damage.","emoji":"🔍","category":"inspection","priority":"normal"}]
+category must be one of: watering, nutrition, inspection, harvest, selling, general
+priority must be exactly: high or normal`,
+        },
+        {
+          role: 'user',
+          content: `Generate 4-5 farming tasks for an Indian farmer.
+Crop: ${cropName}
+Today is Day ${dayNumber} of ${totalDays} days total (${progress}% complete)
+Current phase: ${phase}
 
+Tasks must be specific to this crop and day. Return ONLY the JSON array.`,
+        },
+      ],
+      max_tokens: 600,
+      temperature: 0.2,
+    }),
+  });
+
+  if (!response.ok) {
+    const err = await response.text();
+    throw new Error(`API error: ${response.status} — ${err}`);
+  }
+
+  const data = await response.json();
+  const content = (data.choices[0].message.content as string).trim();
+
+  // Extract JSON array even if there's extra text
+  const match = content.match(/\[[\s\S]*\]/);
+  if (!match) throw new Error('No JSON array found in response');
+
+  const tasks = JSON.parse(match[0]);
+
+  return tasks.map((t: any, i: number) => ({
+    id: t.id || `ai_${dayNumber}_${i}`,
+    title: t.title || 'Check your crop',
+    desc: t.desc || 'Monitor your crop condition today.',
+    emoji: t.emoji || '🌱',
+    category: ['watering', 'nutrition', 'inspection', 'harvest', 'selling', 'general']
+      .includes(t.category) ? t.category : 'general',
+    priority: t.priority === 'high' ? 'high' : 'normal',
+    daysRange: [dayNumber, dayNumber] as [number, number],
+  }));
+}
   const loadCropData = async () => {
-    setLoading(true);
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) { setLoading(false); return; }
+  setLoading(true);
+  try {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) { setLoading(false); return; }
 
-      const { data } = await supabase
-        .from('profiles')
-        .select('saved_crop, crop_start_date, crop_cycle_days')
-        .eq('id', user.id)
-        .maybeSingle();
+    const { data } = await supabase
+      .from('profiles')
+      .select('saved_crop, crop_start_date, crop_cycle_days')
+      .eq('id', user.id)
+      .maybeSingle();
 
-      if (data?.saved_crop && data?.crop_start_date) {
-        const start = new Date(data.crop_start_date);
-        const today = new Date();
-        const total = data.crop_cycle_days || 30;
-        const gone  = Math.max(1, Math.floor((today.getTime() - start.getTime()) / 86400000));
-        const left  = Math.max(0, total - gone);
-        const prog  = Math.min(100, Math.round((gone / total) * 100));
+    if (data?.saved_crop && data?.crop_start_date) {
+      const start = new Date(data.crop_start_date);
+      const today = new Date();
+      const total = data.crop_cycle_days || 30;
+      const gone  = Math.max(1, Math.floor((today.getTime() - start.getTime()) / 86400000));
+      const left  = Math.max(0, total - gone);
+      const prog  = Math.min(100, Math.round((gone / total) * 100));
 
-        setCropName(data.saved_crop);
-        setDayNumber(gone);
-        setDaysLeft(left);
-        setProgress(prog);
+      setCropName(data.saved_crop);
+      setDayNumber(gone);
+      setDaysLeft(left);
+      setProgress(prog);
 
-        const allTasks = CROP_TASKS[data.saved_crop] ?? DEFAULT_TASKS;
-        const filtered = allTasks.filter(t => gone >= t.daysRange[0] && gone <= t.daysRange[1]);
-        setTodayTasks(filtered.length > 0 ? filtered : DEFAULT_TASKS.slice(0, 3));
-      }
-    } catch (e: any) {
-      console.log('Checklist error:', e.message);
-    } finally {
-      setLoading(false);
+      // Try AI-generated tasks first
+      try {
+  const aiTasks = await generateDailyTasks(data.saved_crop, gone, total);
+  if (aiTasks.length > 0) {
+    setTodayTasks(aiTasks);
+    setLoading(false);
+    return;
+  }
+} catch (e: any) {
+  // Falls through to hardcoded tasks
+}
+
+      // Fallback to hardcoded tasks if AI fails
+      const allTasks = CROP_TASKS[data.saved_crop] ?? DEFAULT_TASKS;
+      const filtered = allTasks.filter(t => gone >= t.daysRange[0] && gone <= t.daysRange[1]);
+      setTodayTasks(filtered.length > 0 ? filtered : DEFAULT_TASKS.slice(0, 3));
     }
-  };
-
+  } catch (e: any) {
+  } finally {
+    setLoading(false);
+  }
+};
+if (loading) {
+  return (
+    <SafeAreaView style={styles.container}>
+      <View style={styles.header}>
+        <TouchableOpacity onPress={() => router.back()}>
+          <Text style={styles.backBtn}>← Back</Text>
+        </TouchableOpacity>
+        <Text style={styles.headerTitle}>📋 Daily Checklist</Text>
+        <View style={{ width: 60 }} />
+      </View>
+      <View style={styles.centerBox}>
+        <ActivityIndicator size="large" color="#1a6b3c" />
+        <Text style={styles.loadingText}>🤖 AI generating today's tasks...</Text>
+        <Text style={[styles.loadingText, { fontSize: 12, marginTop: 6 }]}>
+          Personalized for Day {dayNumber} of {cropName || 'your crop'}
+        </Text>
+      </View>
+    </SafeAreaView>
+  );
+}
   const toggleTask = (id: string) => {
     setChecked(prev => ({ ...prev, [id]: !prev[id] }));
   };
@@ -338,17 +439,25 @@ export default function ChecklistScreen() {
 
   // ── Get current phase label ──────────────────────────────────────────────
   const getPhaseLabel = () => {
-    if (!cropName || dayNumber === 0) return '';
-    const allTasks = CROP_TASKS[cropName] ?? [];
-    if (allTasks.length === 0) return 'Growing';
+  if (!cropName || dayNumber === 0) return '🌱 Starting';
 
+  // For crops with hardcoded tasks, use task categories
+  const allTasks = CROP_TASKS[cropName] ?? [];
+  if (allTasks.length > 0) {
     const phaseTasks = allTasks.filter(t => dayNumber >= t.daysRange[0] && dayNumber <= t.daysRange[1]);
     if (phaseTasks.some(t => t.category === 'harvest')) return '🎉 Harvest Phase';
     if (phaseTasks.some(t => t.category === 'selling')) return '📦 Selling Phase';
-    if (dayNumber <= 7)  return '🌱 Germination Phase';
-    if (dayNumber <= 21) return '🌿 Growth Phase';
-    return '🌾 Maturation Phase';
-  };
+  }
+
+  // For ALL crops (including AI ones) — use progress percentage
+  const prog = progress;
+  if (prog <= 5)  return '🌱 Germination Phase';
+  if (prog <= 20) return '🌿 Early Growth Phase';
+  if (prog <= 50) return '🌾 Active Growth Phase';
+  if (prog <= 75) return '🍀 Maturation Phase';
+  if (prog <= 90) return '📦 Pre-Harvest Phase';
+  return '🎉 Harvest Phase';
+};
 
   // ── Loading state ────────────────────────────────────────────────────────
   if (loading) {

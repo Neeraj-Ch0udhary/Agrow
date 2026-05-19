@@ -28,18 +28,14 @@ export const fetchMandiPrices = async (
     let url = `${BASE_URL}?api-key=${API_KEY}&format=json&limit=${limit}&filters[state]=${encodeURIComponent(state)}`;
     if (commodity) url += `&filters[commodity]=${encodeURIComponent(commodity)}`;
 
-    console.log('🌾 Fetching URL:', url);
     const response = await fetch(url);
     const data = await response.json();
-    console.log('📦 API Response:', JSON.stringify(data).slice(0, 500));
-    console.log('📊 Records count:', data.records?.length ?? 0);
 
     return {
       records: data.records || [],
       total: data.total || 0,
     };
   } catch (e: any) {
-    console.log('❌ Mandi API error:', e.message);
     return { records: [], total: 0 };
   }
 };

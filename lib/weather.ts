@@ -43,7 +43,6 @@ export async function fetchWeather(): Promise<WeatherData | null> {
     // Request location permission
     const { status } = await Location.requestForegroundPermissionsAsync();
     if (status !== 'granted') {
-      console.log('Location permission denied');
       return null;
     }
 
@@ -81,7 +80,6 @@ export async function fetchWeather(): Promise<WeatherData | null> {
       advice:     getFarmingAdvice(code, humidity, wind),
     };
   } catch (error) {
-    console.log('Weather fetch error:', error);
     return null;
   }
 }

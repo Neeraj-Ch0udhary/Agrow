@@ -45,7 +45,6 @@ export default function PlanScreen() {
   const generatePlan = async () => {
     setLoading(true);
     try { const plan = await generateFarmingPlan(details); setResult(plan); setStep(5); }
-    catch { console.log('Plan error'); }
     finally { setLoading(false); }
   };
 

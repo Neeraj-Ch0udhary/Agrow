@@ -63,7 +63,6 @@ export default function ProfileScreen() {
       });
     }
   } catch (error: any) {
-    console.log('Profile error:', error.message);
   } finally {
     setLoading(false);
   }

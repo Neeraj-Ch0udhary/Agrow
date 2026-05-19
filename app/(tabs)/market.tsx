@@ -61,7 +61,6 @@ export default function MarketScreen() {
       // Get current user
       const { data: { user } } = await supabase.auth.getUser();
       setCurrentUserId(user?.id ?? null);
-      console.log('🧑 Current user ID:', user?.id);
       
       const { data, error } = await supabase
         .from('marketplace_listings')
@@ -72,7 +71,6 @@ export default function MarketScreen() {
       if (error) throw error;
       setListings(data || []);
     } catch (e: any) {
-      console.log('Listings error:', e.message);
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -284,7 +282,6 @@ export default function MarketScreen() {
             </View>
           ) : (
             filtered.map((item, i) => {
-              console.log(`📋 Listing ${i}: farmer_id=${item.farmer_id}, match=${item.farmer_id === currentUserId}`);
               return (
               <View key={i} style={styles.listingCard}>
 

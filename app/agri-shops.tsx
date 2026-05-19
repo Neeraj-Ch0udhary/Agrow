@@ -60,7 +60,6 @@ export default function AgriShopsScreen() {
         setCity(geo[0].city || geo[0].district || geo[0].region || '');
       }
     } catch (e) {
-      console.log('Location error:', e);
     } finally {
       setLoading(false);
     }

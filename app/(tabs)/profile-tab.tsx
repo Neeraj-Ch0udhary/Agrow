@@ -59,7 +59,6 @@ export default function ProfileTabScreen() {
         }
       }
     } catch (e) {
-      console.log('Profile tab error:', e);
     } finally {
       setLoading(false);
     }

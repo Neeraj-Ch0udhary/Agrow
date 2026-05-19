@@ -140,7 +140,6 @@ const saveCropToProfile = async (result: Result) => {
       })
       .eq('id', user.id);
   } catch (e) {
-    console.log('Save crop error:', e);
   }
 };
 const styles = StyleSheet.create({

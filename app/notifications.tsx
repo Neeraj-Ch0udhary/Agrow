@@ -339,7 +339,6 @@ export default function NotificationsScreen() {
         ]);
       }
     } catch (e: any) {
-      console.log('Notifications error:', e.message);
     } finally {
       setLoading(false);
       setRefreshing(false);
