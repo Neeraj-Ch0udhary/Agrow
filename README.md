@@ -11,7 +11,7 @@
 [![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![Supabase](https://img.shields.io/badge/Supabase-3ECF8E?style=for-the-badge&logo=supabase&logoColor=white)](https://supabase.com/)
 [![Expo](https://img.shields.io/badge/Expo-000020?style=for-the-badge&logo=expo&logoColor=white)](https://expo.dev/)
-[![Live Website](https://img.shields.io/badge/🌐_Live_Website-agrow--app.vercel.app-1b6b3a?style=for-the-badge)](https://agrow-rosy.vercel.app)
+[![Live Website](https://img.shields.io/badge/🌐_Live_Website-agrow--app.vercel.app-1b6b3a?style=for-the-badge)](https://agrow-app.vercel.app)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](LICENSE)
 
 </div>
