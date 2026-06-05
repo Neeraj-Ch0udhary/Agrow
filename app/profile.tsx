@@ -87,12 +87,6 @@ export default function ProfileScreen() {
       setSaving(false);
     }
   };
-  <><TouchableOpacity style={styles.logoutBtn} onPress={handleLogout}>
-  </TouchableOpacity><TouchableOpacity style={styles.settingsBtn} onPress={() => router.push('/settings')}>
-      <Text style={styles.settingsEmoji}>⚙️</Text>
-      <Text style={styles.settingsText}>Settings</Text>
-      <Text style={styles.settingsArrow}>›</Text>
-    </TouchableOpacity></>
 
   const handleLogout = async () => {
     Alert.alert(t('profile.logout'), t('profile.logoutConfirm'), [

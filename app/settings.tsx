@@ -8,6 +8,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import i18n, { changeLanguage } from '../lib/i18n';
 import { supabase } from '../lib/supabase';
+import { logout } from '../../lib/logout';
 
 type SettingRowProps = {
   emoji: string;
